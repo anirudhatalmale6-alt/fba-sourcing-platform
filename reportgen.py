@@ -378,13 +378,20 @@ in the baseline row is a product that has not been costed with enough room.</p>
 {manual_note}
 
 <section><h2>Taking this further</h2>
-<div class="cta"><h3>{html.escape(config.PREMIUM_NAME)}</h3>
-<p>Everything above is modelled from the figures you supplied. The next step is
-replacing assumptions with real quotes: our team sources the product directly from
-vetted factories, negotiates on your behalf, inspects before shipping and delivers
-prepped and labelled into Amazon FBA.</p>
-<p>Reply to your confirmation email and we will come back with sourcing options for
-this product.</p></div></section>
+<div class="cta"><h3>{html.escape(config.STARTER_NAME)} &nbsp;&middot;&nbsp; {html.escape(config.LAUNCH_NAME)}</h3>
+<p>Everything above is modelled from the figures you supplied. The single biggest
+improvement available to you is replacing those assumptions with real quotes, and that
+is what our China supplier network is for.</p>
+<p><strong>{html.escape(config.STARTER_NAME)}, {_m(config.STARTER_PRICE_GBP)}.</strong>
+We source three verified factories for this product, confirm they are manufacturers
+rather than resellers, negotiate on your behalf and quote the freight properly.</p>
+<p><strong>{html.escape(config.LAUNCH_NAME)}, {_m(config.LAUNCH_PRICE_FROM)} to
+{_m(config.LAUNCH_PRICE_TO)} by scope.</strong> Everything above plus sample management,
+private label and packaging, pre-shipment quality inspection, shipping, import and
+customs, FNSKU labelling and prep, and delivery direct into your Amazon FBA warehouse.</p>
+<p>{"Message us on WhatsApp on +" + html.escape(config.WHATSAPP_NUMBER) + ", or reply" if config.WHATSAPP_NUMBER else "Reply"}
+to your confirmation email and we will come back with sourcing options for this product.</p>
+</div></section>
 
 <footer>
 Prepared by {html.escape(config.BRAND_NAME)}. This report is a commercial assessment based on

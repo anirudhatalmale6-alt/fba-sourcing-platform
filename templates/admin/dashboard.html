@@ -4,6 +4,15 @@
 {% block content %}
 <h2 style="font-size:22px;margin:0 0 18px">Dashboard</h2>
 
+{% if cfg.WHATSAPP_NUMBER.startswith('4477009') %}
+<div class="notice warn" style="margin-bottom:22px;border-left-color:#a4341f">
+  <h4>The WhatsApp number is still a placeholder</h4>
+  <p>+{{ cfg.WHATSAPP_NUMBER }} is a reserved test number that goes nowhere. Replace it with
+  the real business number in the WHATSAPP_NUMBER setting before this site goes public,
+  or the button will send enquiries into a void.</p>
+</div>
+{% endif %}
+
 {% if not cfg.EMAIL_LIVE or not cfg.PAYMENTS_LIVE %}
 <div class="notice warn" style="margin-bottom:22px">
   <h4>Running in test configuration</h4>
@@ -24,6 +33,8 @@
   <div class="stat"><span>Revenue</span><strong>{{ stats.revenue|money|safe }}</strong></div>
   <div class="stat"><span>Awaiting review</span><strong>{{ stats.awaiting }}</strong></div>
   <div class="stat"><span>Enquiries</span><strong>{{ stats.enquiries }}</strong></div>
+  <div class="stat"><span>Follow-ups queued</span><strong>{{ stats.seq_pending }}</strong></div>
+  <div class="stat"><span>Follow-ups sent</span><strong>{{ stats.seq_sent }}</strong></div>
 </div>
 
 <div class="admin-card">

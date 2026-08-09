@@ -7,7 +7,18 @@ and positions the full sourcing service behind it.
 ```
 Calculator  ->  Lead capture  ->  Paid audit  ->  Questionnaire  ->  Report  ->  Sourcing service
    free         email + data      Stripe/PayPal    product detail    auto + manual    the real revenue
+                      |
+                      +--> 3-step follow-up sequence (stops on purchase or unsubscribe)
 ```
+
+Three tiers: the audit is bought online, the two sourcing packages are enquiry-led because
+they need a conversation before anyone should be taking money.
+
+| Tier | Price | Sold by |
+|---|---|---|
+| Automated Amazon Profit Audit | £79 | Checkout |
+| Sourcing Starter Package | £499 | Enquiry |
+| Full FBA Launch Package | £1,500–£3,000 | Enquiry |
 
 ## What is included
 
@@ -21,6 +32,8 @@ Calculator  ->  Lead capture  ->  Paid audit  ->  Questionnaire  ->  Report  -> 
 | Manual upgrade | A specialist writes their own analysis in admin; it is added to the report and lifts it to the premium tier. |
 | Admin | Dashboard, orders, leads, enquiries, email outbox, CSV export, manual payment marking. |
 | Emails | Calculator summary, order confirmation, report ready, internal alerts. Stored in an outbox if SMTP is absent. |
+| Follow-up sequence | Three automated emails after the calculator: hidden Amazon costs, the China sourcing advantage, then the audit offer. Personalised with the lead's own figures. Cancels itself on purchase or unsubscribe. |
+| WhatsApp | Floating button, nav link and inline panels on the pages where people hesitate. Renders only when a number is configured. |
 
 ## Running it
 
@@ -46,6 +59,11 @@ All settings are environment variables, read in `config.py`. Nothing is hard-cod
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`, `SMTP_TLS` | Outbound email. |
 | `ADMIN_NOTIFY_EMAIL` | Where new lead and sale alerts go. |
 | `ADMIN_USER`, `ADMIN_PASS`, `SESSION_SECRET` | Admin access. Change all three before going live. |
+| `STARTER_PRICE_GBP`, `STARTER_NAME` | The sourcing tier. |
+| `LAUNCH_PRICE_FROM`, `LAUNCH_PRICE_TO`, `LAUNCH_NAME` | The done-for-you tier. |
+| `WHATSAPP_NUMBER`, `WHATSAPP_HOURS`, `WHATSAPP_PREFILL` | Digits only, international, no plus sign. Blank hides every WhatsApp element. |
+| `SEQ_HIDDEN_COSTS_HOURS`, `SEQ_SOURCING_HOURS`, `SEQ_OFFER_HOURS` | Follow-up timings, default 24 / 72 / 120. Set to fractions to watch the sequence run while testing. |
+| `SEQUENCE_ENABLED`, `SEQUENCE_TICK_SECONDS` | Turn the sequence off, or change how often it checks for due mail. |
 | `TARGET_MARGIN_PCT`, `TARGET_ROI_PCT` | The benchmarks the calculator recommends against. |
 | `FX_USD_GBP` | Default dollar rate shown in the form. |
 

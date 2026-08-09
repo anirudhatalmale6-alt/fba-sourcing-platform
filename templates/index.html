@@ -6,17 +6,24 @@
   <div class="wrap">
     <div class="hero-grid">
       <div>
-        <p class="eyebrow">China to Amazon UK &mdash; costed properly</p>
-        <h1>Know what a product really costs <em>before</em> you wire the deposit.</h1>
-        <p class="lede">Most importers find out their margin after the container lands. Our
-        calculator gives you the true landed cost, break-even price and profit per unit in
-        under a minute &mdash; including the duty and VAT treatment that catches people out.</p>
+        <p class="eyebrow">China sourcing &middot; Quality control &middot; Delivered into Amazon FBA</p>
+        <h1>We source it in China. We land it in <em>Amazon</em>.</h1>
+        <p class="lede">Factory sourcing, negotiation, inspection, private label, shipping,
+        import paperwork and FBA prep &mdash; handled end to end for UK sellers. And before any
+        of that, a free calculator that tells you honestly whether the product is worth
+        importing at all.</p>
         <div class="hero-cta">
-          <a class="btn amber" href="#calculator">Run the numbers &mdash; free</a>
-          <a class="btn ghost" href="/services">See how we source</a>
+          <a class="btn amber" href="/services">How we source</a>
+          <a class="btn ghost" href="#calculator">Cost a product &mdash; free</a>
+          {% if whatsapp %}
+          <a class="btn wa-inline" href="{{ whatsapp_link }}" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm4.52 12.15c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.51.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.16 0-.43.06-.65.31-.22.25-.85.83-.85 2.03s.87 2.35.99 2.51c.12.16 1.71 2.61 4.15 3.66.58.25 1.03.4 1.39.51.58.19 1.11.16 1.53.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29z"/></svg>
+            Talk to us</a>
+          {% endif %}
         </div>
-        <p class="hero-note">No account needed. We only ask for your details once you have
-        seen your figures.</p>
+        <p class="hero-note">Direct factory relationships, not a directory. We buy from the
+        manufacturer, inspect before the balance is paid, and deliver prepped and labelled
+        into your FBA warehouse.</p>
       </div>
       <div class="docket">
         <h4>What sellers get wrong <b>3 of 4</b></h4>
@@ -36,6 +43,36 @@
     </div>
   </div>
 </div>
+
+<section class="band dark" id="sourcing">
+  <div class="wrap">
+    <div class="sec-head" style="max-width:800px">
+      <p class="eyebrow">Our China supplier advantage</p>
+      <h2>A trusted factory network, working for you rather than selling to you</h2>
+      <p>This is the business. We are not a directory, and we are not a middleman marking up a
+      trading company's quote. Everything below is handled by our own team, in Mandarin, on
+      your behalf.</p>
+    </div>
+    <div class="adv">
+      {% for name, claim, blurb in advantage %}
+      <article>
+        <span class="n">{{ '%02d' % loop.index }}</span>
+        <h3>{{ name }}</h3>
+        <p class="claim">{{ claim }}</p>
+        <p class="body">{{ blurb }}</p>
+      </article>
+      {% endfor %}
+    </div>
+    <div style="margin-top:30px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+      <a class="btn amber" href="/services">See how the sourcing service works</a>
+      <a class="btn ghost" href="/contact?service=launch"
+         style="color:#fff;border-color:#42576f">Talk to the sourcing team</a>
+      {% if whatsapp %}
+      <a class="btn wa-inline" href="{{ whatsapp_link }}" target="_blank" rel="noopener">WhatsApp us</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
 
 <section class="band" id="calculator">
   <div class="wrap">
@@ -196,66 +233,113 @@
   </div>
 </section>
 
-<section class="band dark" id="sourcing">
+<section class="band">
   <div class="wrap">
-    <div class="sec-head">
-      <p class="eyebrow">Our advantage</p>
-      <h2>A trusted supplier network in China, working for you</h2>
-      <p>We are not a directory and we are not a middleman marking up a trading company's
-      quote. We deal with factories directly, in Mandarin, on your behalf.</p>
+    <div class="grid-2" style="align-items:center">
+      <div>
+        <p class="eyebrow">Rather speak to someone first?</p>
+        <h2 style="font-size:30px;margin-bottom:12px">Ask us before you spend anything</h2>
+        <p class="muted" style="font-size:17px;margin-bottom:22px">Most people want to know
+        whether their idea is worth pursuing before they pay for anything. Tell us the product
+        and we will give you a straight answer, including when the answer is no.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          {% if whatsapp %}
+          <a class="btn wa-inline" href="{{ whatsapp_link }}" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm4.52 12.15c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.51.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.16 0-.43.06-.65.31-.22.25-.85.83-.85 2.03s.87 2.35.99 2.51c.12.16 1.71 2.61 4.15 3.66.58.25 1.03.4 1.39.51.58.19 1.11.16 1.53.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29z"/></svg>
+            Message us on WhatsApp</a>
+          {% endif %}
+          <a class="btn ghost" href="/contact">Send an enquiry</a>
+        </div>
+        {% if whatsapp %}
+        <p class="hero-note" style="margin-top:14px">{{ cfg.WHATSAPP_HOURS }}. No obligation,
+        and we will not put you on a mailing list for asking.</p>
+        {% endif %}
+      </div>
+      <div class="docket">
+        <h4>Questions we get asked most <b>before buying</b></h4>
+        <ul>
+          <li><span>Is my supplier a factory or a reseller?</span><b>we check</b></li>
+          <li><span>What will freight actually cost?</span><b>we quote</b></li>
+          <li><span>What duty rate applies to this?</span><b>we classify</b></li>
+          <li><span>Can you do my packaging and branding?</span><b>yes</b></li>
+          <li><span>Can you deliver straight into FBA?</span><b>yes</b></li>
+        </ul>
+      </div>
     </div>
-    <div class="svc">
-      {% for name, blurb in services %}
-      <div><b>{{ '%02d' % loop.index }}</b><div><h4>{{ name }}</h4><p>{{ blurb }}</p></div></div>
-      {% endfor %}
-    </div>
-    <p style="margin-top:28px"><a class="btn amber" href="/services">How the sourcing service works</a></p>
   </div>
 </section>
 
 <section class="band" id="pricing">
   <div class="wrap">
     <div class="sec-head">
-      <p class="eyebrow">Two ways to work with us</p>
-      <h2>Start with an audit. Move to full sourcing when the numbers justify it.</h2>
+      <p class="eyebrow">Three ways to work with us</p>
+      <h2>Check the numbers, then let us go and buy it properly.</h2>
       <p>The calculator is free and always will be. Beyond that you are paying for our time,
-      our factory relationships and our judgement.</p>
+      our factory relationships and our judgement &mdash; and the further up you go, the more
+      of the work leaves your desk entirely.</p>
     </div>
-    <div class="tiers">
+    <div class="tiers3">
       <div class="tier">
         <span class="tag">Automated</span>
         <h3>{{ audit_name }}</h3>
-        <p class="sub">Your product, run through our model and returned as a written report.</p>
-        <div class="price">&pound;{{ '%g' % audit_price }} <small>one-off</small></div>
+        <p class="sub">Your product run through our model and returned as a written report.</p>
+        <div class="price">&pound;{{ audit_price|price }} <small>one-off</small></div>
         <ul>
           <li>Full landed cost breakdown, line by line</li>
-          <li>Break-even and recommended pricing positions</li>
-          <li>Stress tests: freight rises, price war, ad costs</li>
-          <li>Risk register on your specific numbers</li>
-          <li>Written recommendations and next steps</li>
-          <li>Reviewed by a sourcing specialist before release</li>
+          <li>Break-even and recommended pricing</li>
+          <li>Six stress tests on your margin</li>
+          <li>Risk register on your numbers</li>
+          <li>Written recommendations</li>
+          <li>Checked by a specialist before release</li>
         </ul>
         <a class="btn wide" href="/audit">Order the audit</a>
       </div>
-      <div class="tier feature">
-        <span class="tag">Premium &mdash; done for you</span>
-        <h3>{{ premium_name }}</h3>
-        <p class="sub">We take the product from idea to stock in Amazon's warehouse.</p>
-        <div class="price">from &pound;{{ '%g' % premium_price }} <small>+ per project</small></div>
+
+      <div class="tier">
+        <span class="tag">Sourcing</span>
+        <h3>{{ starter_name }}</h3>
+        <p class="sub">We go to the market for you and come back with real quotes.</p>
+        <div class="price">&pound;{{ starter_price|price }} <small>per product</small></div>
         <ul>
-          <li>Everything in the {{ audit_name }}</li>
-          <li>Personal product analysis by our sourcing team</li>
-          <li>Factory identification and verification</li>
-          <li>Price and terms negotiated on your behalf</li>
-          <li>Sample management and approval</li>
-          <li>Pre-shipment quality inspection with photographs</li>
-          <li>Freight, customs and import paperwork</li>
-          <li>Private label, packaging and branding</li>
-          <li>FNSKU labelling, prep and delivery into FBA</li>
+          <li>Everything in the audit</li>
+          <li>Factory sourcing: three verified manufacturers</li>
+          <li>Supplier verification, licence and export history</li>
+          <li>Written specification prepared for quoting</li>
+          <li>Price negotiation on your behalf</li>
+          <li>Sample ordering and consolidation</li>
+          <li>Freight quoted sea, rail and air</li>
+          <li>Duty and commodity code confirmed</li>
         </ul>
-        <a class="btn amber wide" href="/contact?service=premium">Talk to the sourcing team</a>
+        <a class="btn wide" href="/contact?service=starter">Enquire about sourcing</a>
+      </div>
+
+      <div class="tier top">
+        <span class="tag">Done for you</span>
+        <h3>{{ launch_name }}</h3>
+        <p class="sub">Idea to stock in Amazon's warehouse. We handle the supply chain, you
+        handle the listing.</p>
+        <div class="price">&pound;{{ launch_from|price }}&ndash;&pound;{{ launch_to|price }}
+          <small>by scope</small></div>
+        <ul>
+          <li>Everything in the {{ starter_name }}</li>
+          <li>Full supplier sourcing and negotiation</li>
+          <li>Sample management through to golden sample</li>
+          <li>Private label: product, packaging and inserts</li>
+          <li>Custom branding and tooling negotiated</li>
+          <li>Pre-shipment quality inspection with photos</li>
+          <li>Shipping booked, tracked and insured</li>
+          <li>Import, duty, VAT and customs clearance</li>
+          <li>FBA prep: FNSKU labelling, polybagging, cartons</li>
+          <li>Delivered direct into your Amazon FBA warehouse</li>
+        </ul>
+        <a class="btn amber wide" href="/contact?service=launch">Talk to the sourcing team</a>
       </div>
     </div>
+    <p class="muted" style="margin-top:22px;font-size:15px;max-width:60em">
+      The two sourcing packages are quoted after a conversation, because the right price
+      depends on the product, the order size and how much of the work you want to keep.
+      {% if whatsapp %}Message us on <a href="{{ whatsapp_link }}" target="_blank" rel="noopener">WhatsApp</a>
+      and we will tell you where you would land.{% endif %}</p>
   </div>
 </section>
 

@@ -85,6 +85,8 @@ nav.main a:hover{color:var(--amber)}
 
 /* ---------- sections ---------- */
 section.band{padding:62px 0;border-bottom:1px solid var(--rule)}
+/* the header is sticky, so anchored sections must clear it */
+section[id],div[id]{scroll-margin-top:78px}
 section.band.dark{background:var(--ink);color:#e7ecf2;border-bottom:none}
 section.band.dark h2,section.band.dark h3{color:#fff}
 section.band.dark .eyebrow{color:#e9a26a}
@@ -291,9 +293,60 @@ pre.mailbody{background:var(--paper-2);border:1px solid var(--rule);padding:16px
 .login-box h1{font-size:22px;margin:0 0 6px}
 .login-box p{margin:0 0 22px;color:var(--muted);font-size:14px}
 
+/* ---------- whatsapp ---------- */
+.wa-nav{display:inline-flex;align-items:center;gap:6px;color:#128c7e !important;font-weight:600}
+.wa-nav:before{content:"";width:8px;height:8px;border-radius:50%;background:#25d366;
+  box-shadow:0 0 0 3px rgba(37,211,102,.22)}
+.wa-float{position:fixed;right:20px;bottom:20px;z-index:80;display:inline-flex;align-items:center;
+  gap:10px;background:#25d366;color:#fff;text-decoration:none;padding:13px 19px 13px 15px;
+  border-radius:40px;font-family:var(--sans);font-weight:600;font-size:14.5px;
+  box-shadow:0 6px 22px rgba(18,140,126,.35);transition:.18s}
+.wa-float:hover{background:#128c7e;transform:translateY(-2px);
+  box-shadow:0 9px 26px rgba(18,140,126,.42)}
+.wa-float svg{flex:none}
+.wa-inline{display:inline-flex;align-items:center;gap:9px;background:#25d366;border-color:#25d366;
+  color:#fff}
+.wa-inline:hover{background:#128c7e;border-color:#128c7e}
+.wa-panel{border:1px solid var(--rule-2);background:#f2fbf5;border-left:4px solid #25d366;
+  padding:18px 20px}
+.wa-panel h4{font-size:16.5px;margin:0 0 5px}
+.wa-panel p{margin:0 0 14px;font-size:14.5px;color:#41506a}
+
+/* ---------- advantage grid ---------- */
+.adv{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);
+  border:1px solid var(--rule)}
+.adv article{background:#fff;padding:22px 20px 24px}
+.adv .n{font-family:var(--mono);font-size:11px;color:var(--amber);display:block;margin-bottom:10px;
+  letter-spacing:.08em}
+.adv h3{font-size:17px;margin:0 0 6px;line-height:1.2}
+.adv .claim{font-family:var(--sans);font-size:13.5px;color:var(--amber-2);margin:0 0 9px;
+  font-weight:600;line-height:1.35}
+.adv p.body{margin:0;font-size:14px;color:#4a5462;line-height:1.55}
+section.band.dark .adv{background:#22344a;border-color:#2b3d52}
+section.band.dark .adv article{background:var(--ink)}
+section.band.dark .adv h3{color:#fff}
+section.band.dark .adv .claim{color:#e9a26a}
+section.band.dark .adv p.body{color:#a9b7c6}
+
+/* ---------- three tiers ---------- */
+.tiers3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch}
+.tiers3 .tier{display:flex;flex-direction:column;padding:26px}
+.tiers3 .tier ul{flex:1}
+.tiers3 .tier h3{font-size:21px}
+.tiers3 .tier .price{font-size:31px}
+.tier.top{border:2px solid var(--amber);box-shadow:0 6px 34px rgba(194,112,61,.16)}
+.tier.top .tag{color:#fff;background:var(--amber);display:inline-block;padding:4px 10px;
+  border-radius:2px;margin-bottom:12px}
+
 /* ---------- responsive ---------- */
+@media (max-width:1020px){
+  .adv{grid-template-columns:repeat(2,1fr)}
+  .tiers3{grid-template-columns:1fr;gap:18px}
+}
 @media (max-width:960px){
   .hero-grid,.calc,.grid-2,.tiers{grid-template-columns:1fr}
+  .wa-float span{display:none}
+  .wa-float{padding:15px;border-radius:50%}
   .calc-form{border-right:none;border-bottom:1px solid var(--rule)}
   .grid-3,.steps{grid-template-columns:1fr 1fr}
   .steps div{border-right:none;border-bottom:1px solid var(--rule);padding-right:0}
@@ -304,7 +357,7 @@ pre.mailbody{background:var(--paper-2);border:1px solid var(--rule);padding:16px
 }
 @media (max-width:620px){
   body{font-size:16px}
-  .grid-3,.steps,.row,.row.three,.figs{grid-template-columns:1fr}
+  .grid-3,.steps,.row,.row.three,.figs,.adv{grid-template-columns:1fr}
   .hero{padding:40px 0 32px}
   section.band{padding:44px 0}
   .foot-grid{grid-template-columns:1fr}

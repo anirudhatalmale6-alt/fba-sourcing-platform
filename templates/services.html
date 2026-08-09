@@ -17,8 +17,40 @@
 <section class="band tint">
   <div class="wrap">
     <div class="sec-head">
-      <p class="eyebrow">What we handle</p>
+      <p class="eyebrow">Our China supplier advantage</p>
       <h2>The whole chain, from factory floor to Amazon shelf</h2>
+      <p>Eight things we do that decide whether a product makes money. Most sellers try to do
+      them from a laptop in the UK, at a six thousand mile distance, in a second language.</p>
+    </div>
+    <div class="adv">
+      {% for name, claim, blurb in advantage %}
+      <article>
+        <span class="n">{{ '%02d' % loop.index }}</span>
+        <h3>{{ name }}</h3>
+        <p class="claim">{{ claim }}</p>
+        <p class="body">{{ blurb }}</p>
+      </article>
+      {% endfor %}
+    </div>
+    {% if whatsapp %}
+    <div class="wa-panel" style="margin-top:26px;display:flex;justify-content:space-between;
+      align-items:center;gap:20px;flex-wrap:wrap">
+      <div>
+        <h4>Not sure which of these you actually need?</h4>
+        <p style="margin:0">Tell us the product and we will tell you which parts matter and
+        which you can safely skip. {{ cfg.WHATSAPP_HOURS }}.</p>
+      </div>
+      <a class="btn wa-inline" href="{{ whatsapp_link }}" target="_blank" rel="noopener">WhatsApp us</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Also included</p>
+      <h2>The detail behind each stage</h2>
     </div>
     <div class="svc" style="border-top-color:var(--rule-2)">
       {% for name, blurb in services %}
@@ -94,7 +126,11 @@
     <p class="muted" style="font-size:18px;margin:0 auto 26px;max-width:34em">Run your product
     through the calculator, then let us tell you what we would do with it.</p>
     <a class="btn amber" href="/#calculator">Use the calculator</a>
-    <a class="btn ghost" href="/contact?service=premium" style="margin-left:8px">Talk to the team</a>
+    <a class="btn ghost" href="/contact?service=launch" style="margin-left:8px">Talk to the team</a>
+    {% if whatsapp %}
+    <a class="btn wa-inline" href="{{ whatsapp_link }}" target="_blank" rel="noopener"
+       style="margin-left:8px">WhatsApp</a>
+    {% endif %}
   </div>
 </section>
 {% endblock %}

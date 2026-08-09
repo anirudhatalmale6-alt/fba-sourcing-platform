@@ -14,6 +14,7 @@ import db
 import emailer
 import payments
 import reportgen
+import sequences
 from calc import Inputs, calculate, summarise
 
 app = FastAPI(title="%s" % config.BRAND_NAME, docs_url=None, redoc_url=None)
@@ -21,6 +22,20 @@ app.mount("/static", StaticFiles(directory=str(config.BASE_DIR / "static")), nam
 templates = Jinja2Templates(directory=str(config.BASE_DIR / "templates"))
 
 db.init()
+
+
+@app.on_event("startup")
+async def _start_sequence_runner():
+    if config.SEQUENCE_ENABLED:
+        import asyncio
+        app.state.seq_task = asyncio.create_task(sequences.ticker())
+
+
+@app.on_event("shutdown")
+async def _stop_sequence_runner():
+    task = getattr(app.state, "seq_task", None)
+    if task:
+        task.cancel()
 
 
 # --- template globals ------------------------------------------------------
@@ -32,11 +47,27 @@ def base_ctx(request):
         "tagline": config.BRAND_TAGLINE,
         "audit_price": config.AUDIT_PRICE_GBP,
         "audit_name": config.AUDIT_NAME,
+        "starter_name": config.STARTER_NAME,
+        "starter_price": config.STARTER_PRICE_GBP,
+        "launch_name": config.LAUNCH_NAME,
+        "launch_from": config.LAUNCH_PRICE_FROM,
+        "launch_to": config.LAUNCH_PRICE_TO,
         "premium_name": config.PREMIUM_NAME,
         "premium_price": config.PREMIUM_PRICE_GBP,
         "services": config.SOURCING_SERVICES,
+        "advantage": config.CHINA_ADVANTAGE,
+        "whatsapp": config.WHATSAPP_NUMBER,
+        "whatsapp_link": _whatsapp_link(),
         "year": time.strftime("%Y"),
     }
+
+
+def _whatsapp_link():
+    if not config.WHATSAPP_NUMBER:
+        return ""
+    import urllib.parse
+    return "https://wa.me/%s?text=%s" % (
+        config.WHATSAPP_NUMBER, urllib.parse.quote(config.WHATSAPP_PREFILL))
 
 
 def money(x):
@@ -49,7 +80,16 @@ def money(x):
     return "&pound;" + format(v, ",.2f")
 
 
+def price(x):
+    """Whole-pound price with a thousands separator: 1500 -> 1,500."""
+    try:
+        return format(float(x), ",.0f")
+    except (TypeError, ValueError):
+        return "0"
+
+
 templates.env.filters["money"] = money
+templates.env.filters["price"] = price
 templates.env.globals["cfg"] = config
 
 
@@ -152,8 +192,9 @@ async def capture_lead(request: Request):
 
     res = calculate(Inputs.from_form(form))
     lead_id, token = db.create_lead(form, res["inputs"], res, summarise(res))
-    subject, body = emailer.calculator_summary_email(form, res)
+    subject, body = emailer.calculator_summary_email(form, res, token)
     emailer.send(email, subject, body, kind="calc_summary")
+    sequences.schedule_for_lead(lead_id)
     emailer.notify_admin(
         "New calculator lead: %s" % (form.get("product_name") or "unnamed product"),
         "Name: %s\nEmail: %s\nPhone: %s\nProduct: %s\nSupplier: %s\n\n%s\n\nNotes: %s" % (
@@ -273,6 +314,8 @@ def _settle(order):
     db.mark_paid(order["id"])
     order = db.get_order(order["id"])
     lead = db.get_lead(order["lead_id"]) if order["lead_id"] else None
+    if lead:
+        sequences.stop_for_lead(lead["id"])   # they bought; stop selling to them
     if lead and lead["email"]:
         subject, body = emailer.order_confirmation_email(order, lead)
         emailer.send(lead["email"], subject, body, kind="order_confirmation")
@@ -334,6 +377,14 @@ def report_view(token: str, print: int = 0):
         db.save_report(order["id"], html, "auto")
         return HTMLResponse(html)
     return HTMLResponse(order["report_html"])
+
+
+@app.get("/unsubscribe/{token}", response_class=HTMLResponse)
+def unsubscribe(request: Request, token: str):
+    ok = db.unsubscribe_lead(token) is not None
+    ctx = base_ctx(request)
+    ctx["ok"] = ok
+    return templates.TemplateResponse("unsubscribe.html", ctx)
 
 
 # --- admin -----------------------------------------------------------------
@@ -444,6 +495,23 @@ def admin_mark_paid(order_id: int, _=Depends(require_admin)):
         raise HTTPException(404)
     _settle(order)
     return RedirectResponse("/admin/order/%d?saved=1" % order_id, status_code=303)
+
+
+@app.get("/admin/sequence", response_class=HTMLResponse)
+def admin_sequence(request: Request, _=Depends(require_admin)):
+    ctx = base_ctx(request)
+    ctx["jobs"] = db.list_sequence_jobs()
+    ctx["steps"] = ["Results summary (immediate)", "Hidden Amazon costs",
+                    "China sourcing advantage", "Product review offer"]
+    ctx["hours"] = config.SEQ_STEP_HOURS
+    return templates.TemplateResponse("admin/sequence.html", ctx)
+
+
+@app.post("/admin/sequence/run")
+def admin_sequence_run(_=Depends(require_admin)):
+    """Send anything already due now, rather than waiting for the next tick."""
+    sequences.run_due(limit=100)
+    return RedirectResponse("/admin/sequence", status_code=303)
 
 
 @app.get("/admin/emails", response_class=HTMLResponse)

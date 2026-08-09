@@ -30,11 +30,14 @@
             <div class="field"><label>Phone <span class="muted">(optional)</span></label>
               <input type="tel" name="phone"></div>
             <div class="field"><label>What do you need?</label>
+              {% set svc = request.query_params.get('service') %}
               <select name="service">
-                <option value="sourcing" {{ 'selected' if request.query_params.get('service') == 'premium' }}>Full sourcing &amp; FBA launch</option>
-                <option value="audit">Product profit audit</option>
+                <option value="launch" {{ 'selected' if svc in ('launch','premium') }}>{{ launch_name }} (&pound;{{ launch_from|price }}&ndash;&pound;{{ launch_to|price }})</option>
+                <option value="starter" {{ 'selected' if svc == 'starter' }}>{{ starter_name }} (&pound;{{ starter_price|price }})</option>
+                <option value="audit" {{ 'selected' if svc == 'audit' }}>{{ audit_name }} (&pound;{{ audit_price|price }})</option>
                 <option value="quality">Quality control only</option>
                 <option value="freight">Freight &amp; import support</option>
+                <option value="private_label">Private label &amp; packaging</option>
                 <option value="other">Something else</option>
               </select></div>
           </div>
@@ -46,6 +49,15 @@
       </div>
 
       <div>
+        {% if whatsapp %}
+        <div class="wa-panel" style="margin-bottom:20px">
+          <h4>Would rather just message us?</h4>
+          <p>WhatsApp is usually the quickest way to get an answer, and you can send photos of
+          a product or a supplier quote straight through. {{ cfg.WHATSAPP_HOURS }}.</p>
+          <a class="btn wa-inline wide" href="{{ whatsapp_link }}" target="_blank" rel="noopener"
+             style="text-align:center;justify-content:center">Message us on WhatsApp</a>
+        </div>
+        {% endif %}
         <div class="panel">
           <h3 style="font-size:18px;margin:0 0 12px">What happens next</h3>
           <table class="kv">

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Unsubscribed &mdash; {{ brand }}{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="wrap narrow">
+    {% if ok %}
+    <h1>That's done.</h1>
+    <p class="lede">You have been removed from our follow-up emails and we will not send you
+    anything further. Nothing else changes &mdash; any report you have bought stays available
+    on your original link.</p>
+    <p class="muted">If you unsubscribed by accident, or you would still like to talk about a
+    product, you can always reach us directly.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:22px">
+      <a class="btn ghost" href="/contact">Contact us</a>
+      {% if whatsapp %}
+      <a class="btn wa-inline" href="{{ whatsapp_link }}" target="_blank" rel="noopener">WhatsApp</a>
+      {% endif %}
+    </div>
+    {% else %}
+    <h1>We could not find that link.</h1>
+    <p class="lede">The unsubscribe link may have been truncated by your email client. If you
+    are still receiving messages you do not want, contact us and we will remove you by hand.</p>
+    <a class="btn ghost" href="/contact">Contact us</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -5,7 +5,7 @@
 <div class="page">
   <div class="wrap">
     <div style="max-width:760px">
-      <p class="eyebrow">Automated tier &mdash; &pound;{{ '%g' % audit_price }}</p>
+      <p class="eyebrow">Automated tier &mdash; &pound;{{ audit_price|price }}</p>
       <h1>{{ audit_name }}</h1>
       <p class="lede">You have the numbers. This tells you whether to trust them. Our team
       runs your product through the full model, stress tests it, and comes back with a
@@ -70,7 +70,7 @@
         <div class="panel" style="border:2px solid var(--ink)">
           <span class="eyebrow" style="margin-bottom:8px">Order your audit</span>
           <div style="font-family:var(--mono);font-size:40px;letter-spacing:-.03em;margin:6px 0 4px">
-            &pound;{{ '%g' % audit_price }}</div>
+            &pound;{{ audit_price|price }}</div>
           <p class="muted" style="margin:0 0 20px;font-size:14.5px">One-off. Per product. No subscription.</p>
 
           <form method="post" action="/checkout">
@@ -111,13 +111,34 @@
             {% endif %}
 
             <button class="btn amber wide" type="submit">
-              {% if providers[0] == 'demo' %}Continue to payment{% else %}Pay &pound;{{ '%g' % audit_price }} and start{% endif %}
+              {% if providers[0] == 'demo' %}Continue to payment{% else %}Pay &pound;{{ audit_price|price }} and start{% endif %}
             </button>
           </form>
 
           <p class="muted" style="font-size:13px;margin:16px 0 0;line-height:1.5">
             After payment you complete a short questionnaire about the product and supplier.
             Your report is prepared from that and reviewed before release.</p>
+        </div>
+
+        {% if whatsapp %}
+        <div class="wa-panel" style="margin-top:20px">
+          <h4>Want to ask something first?</h4>
+          <p>Message us before you pay. Tell us the product and we will say whether the audit
+          is the right thing for you, or whether you should go straight to sourcing.
+          {{ cfg.WHATSAPP_HOURS }}.</p>
+          <a class="btn wa-inline wide" href="{{ whatsapp_link }}" target="_blank" rel="noopener"
+             style="text-align:center;justify-content:center">Ask on WhatsApp</a>
+        </div>
+        {% endif %}
+
+        <div class="panel" style="margin-top:20px">
+          <h3 style="font-size:17px;margin:0 0 10px">Ready to go further?</h3>
+          <p class="muted" style="font-size:15px;margin:0 0 14px">If you already know the
+          product is worth doing, skip the audit. The {{ starter_name }}
+          (&pound;{{ starter_price|price }}) puts our sourcing team on it, and the
+          {{ launch_name }} (&pound;{{ launch_from|price }}&ndash;&pound;{{ launch_to|price }})
+          takes it all the way into Amazon FBA.</p>
+          <a class="btn ghost wide" href="/#pricing">Compare the packages</a>
         </div>
 
         <div class="panel" style="margin-top:20px">

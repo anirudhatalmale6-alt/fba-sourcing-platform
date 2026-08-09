@@ -58,9 +58,27 @@ CREATE TABLE IF NOT EXISTS enquiries (
     created_at TEXT NOT NULL,
     name TEXT, email TEXT, phone TEXT, message TEXT, service TEXT
 );
+CREATE TABLE IF NOT EXISTS sequence_jobs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    lead_id INTEGER NOT NULL,
+    step INTEGER NOT NULL,
+    due_at TEXT NOT NULL,
+    status TEXT NOT NULL,      -- scheduled | sent | cancelled
+    sent_at TEXT,
+    email_id INTEGER,
+    UNIQUE(lead_id, step),
+    FOREIGN KEY(lead_id) REFERENCES leads(id)
+);
 CREATE INDEX IF NOT EXISTS idx_leads_created ON leads(created_at);
 CREATE INDEX IF NOT EXISTS idx_orders_created ON orders(created_at);
+CREATE INDEX IF NOT EXISTS idx_seq_due ON sequence_jobs(status, due_at);
 """
+
+# Columns added after the first release. Applied on every start so an existing
+# database upgrades in place without losing anything.
+MIGRATIONS = [
+    ("leads", "unsubscribed", "ALTER TABLE leads ADD COLUMN unsubscribed INTEGER DEFAULT 0"),
+]
 
 
 def now():
@@ -77,6 +95,10 @@ def connect():
 def init():
     with connect() as conn:
         conn.executescript(SCHEMA)
+        for table, column, ddl in MIGRATIONS:
+            cols = {r["name"] for r in conn.execute("PRAGMA table_info(%s)" % table)}
+            if column not in cols:
+                conn.execute(ddl)
 
 
 def token():
@@ -229,6 +251,61 @@ def list_enquiries(limit=300):
             "SELECT * FROM enquiries ORDER BY id DESC LIMIT ?", (limit,)).fetchall()
 
 
+# --- email sequence --------------------------------------------------------
+def schedule_sequence(lead_id, due_map):
+    """due_map: {step: iso_due_at}. Ignores steps already scheduled or sent."""
+    with connect() as conn:
+        for step, due_at in due_map.items():
+            conn.execute(
+                """INSERT OR IGNORE INTO sequence_jobs (lead_id, step, due_at, status)
+                   VALUES (?,?,?,'scheduled')""", (lead_id, step, due_at))
+
+
+def due_sequence_jobs(now_iso, limit=25):
+    with connect() as conn:
+        return conn.execute(
+            """SELECT j.*, l.name, l.email, l.product_name, l.calc_results, l.token,
+                      l.unsubscribed
+               FROM sequence_jobs j JOIN leads l ON l.id = j.lead_id
+               WHERE j.status='scheduled' AND j.due_at <= ?
+               ORDER BY j.due_at LIMIT ?""", (now_iso, limit)).fetchall()
+
+
+def mark_sequence_sent(job_id, email_id):
+    with connect() as conn:
+        conn.execute(
+            "UPDATE sequence_jobs SET status='sent', sent_at=?, email_id=? WHERE id=?",
+            (now(), email_id, job_id))
+
+
+def cancel_sequence(lead_id, reason_status="cancelled"):
+    """Stop the nurture once someone has bought or opted out."""
+    with connect() as conn:
+        conn.execute(
+            "UPDATE sequence_jobs SET status=? WHERE lead_id=? AND status='scheduled'",
+            (reason_status, lead_id))
+
+
+def unsubscribe_lead(tok):
+    with connect() as conn:
+        row = conn.execute("SELECT id FROM leads WHERE token=?", (tok,)).fetchone()
+        if not row:
+            return None
+        conn.execute("UPDATE leads SET unsubscribed=1 WHERE id=?", (row["id"],))
+        conn.execute(
+            "UPDATE sequence_jobs SET status='cancelled' WHERE lead_id=? AND status='scheduled'",
+            (row["id"],))
+        return row["id"]
+
+
+def list_sequence_jobs(limit=400):
+    with connect() as conn:
+        return conn.execute(
+            """SELECT j.*, l.name, l.email, l.product_name
+               FROM sequence_jobs j JOIN leads l ON l.id = j.lead_id
+               ORDER BY j.due_at DESC LIMIT ?""", (limit,)).fetchall()
+
+
 def stats():
     with connect() as conn:
         one = lambda q: conn.execute(q).fetchone()[0]
@@ -240,4 +317,6 @@ def stats():
             "awaiting": one("SELECT COUNT(*) FROM orders WHERE status='paid' AND report_status IN ('none','auto','manual_review')"),
             "enquiries": one("SELECT COUNT(*) FROM enquiries"),
             "emails": one("SELECT COUNT(*) FROM emails"),
+            "seq_pending": one("SELECT COUNT(*) FROM sequence_jobs WHERE status='scheduled'"),
+            "seq_sent": one("SELECT COUNT(*) FROM sequence_jobs WHERE status='sent'"),
         }

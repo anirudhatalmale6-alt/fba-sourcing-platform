@@ -29,10 +29,29 @@ CONTACT_EMAIL = _env("CONTACT_EMAIL", "")         # shown on site only if set
 CONTACT_PHONE = _env("CONTACT_PHONE", "")
 
 # --- Pricing ---------------------------------------------------------------
+# Three tiers. Only the first is bought online; the other two are enquiry-led
+# because they need a conversation before anyone should be taking money.
 AUDIT_PRICE_GBP = float(_env("AUDIT_PRICE_GBP", "79"))
-AUDIT_NAME = _env("AUDIT_NAME", "Product Profit Audit")
-PREMIUM_PRICE_GBP = float(_env("PREMIUM_PRICE_GBP", "499"))
-PREMIUM_NAME = _env("PREMIUM_NAME", "Full Sourcing & FBA Launch")
+AUDIT_NAME = _env("AUDIT_NAME", "Automated Amazon Profit Audit")
+
+STARTER_PRICE_GBP = float(_env("STARTER_PRICE_GBP", "499"))
+STARTER_NAME = _env("STARTER_NAME", "Sourcing Starter Package")
+
+LAUNCH_PRICE_FROM = float(_env("LAUNCH_PRICE_FROM", "1500"))
+LAUNCH_PRICE_TO = float(_env("LAUNCH_PRICE_TO", "3000"))
+LAUNCH_NAME = _env("LAUNCH_NAME", "Full FBA Launch Package")
+
+# Kept as an alias so older links and copy still resolve to the top tier.
+PREMIUM_NAME = LAUNCH_NAME
+PREMIUM_PRICE_GBP = LAUNCH_PRICE_FROM
+
+# --- Contact ---------------------------------------------------------------
+# Digits only, full international format, no plus sign: 447700900000
+WHATSAPP_NUMBER = _env("WHATSAPP_NUMBER", "")
+WHATSAPP_HOURS = _env("WHATSAPP_HOURS", "Mon to Fri, 9am to 6pm UK")
+WHATSAPP_PREFILL = _env(
+    "WHATSAPP_PREFILL",
+    "Hi, I found you through the FBA calculator and I would like to talk about sourcing a product.")
 
 # --- Calculator defaults (UK) ---------------------------------------------
 DEFAULT_VAT_RATE = 20.0
@@ -72,6 +91,57 @@ ADMIN_PASS = _env("ADMIN_PASS", "harbourline2026")
 SESSION_SECRET = _env("SESSION_SECRET", "change-this-secret-in-production-please")
 
 DB_PATH = str(DATA_DIR / "app.db")
+
+# --- Email sequence --------------------------------------------------------
+# Hours after the calculator submission that each follow-up is due. Drop these
+# to fractions of an hour to watch the whole sequence run during testing.
+SEQ_STEP_HOURS = [
+    float(_env("SEQ_HIDDEN_COSTS_HOURS", "24")),     # 1 - what Amazon really takes
+    float(_env("SEQ_SOURCING_HOURS", "72")),         # 2 - the China supplier advantage
+    float(_env("SEQ_OFFER_HOURS", "120")),           # 3 - the audit offer
+]
+SEQUENCE_ENABLED = _flag("SEQUENCE_ENABLED", True)
+SEQUENCE_TICK_SECONDS = int(_env("SEQUENCE_TICK_SECONDS", "120"))
+
+# --- The China advantage (headline capability set) -------------------------
+# Jason's eight, in his order. These carry the site: the calculator is the hook,
+# this is the business.
+CHINA_ADVANTAGE = [
+    ("Factory sourcing",
+     "We find the manufacturer, not the middleman.",
+     "Most UK sellers buy from a trading company without realising it and pay a hidden margin "
+     "on every unit forever. We identify and verify the actual factory: business licence, "
+     "export history and a video walk of the production line."),
+    ("Bulk purchasing",
+     "Our volume, your price.",
+     "We consolidate orders across our client base, so a first order gets pricing a first-time "
+     "buyer would never be quoted. That difference is often what makes a product viable."),
+    ("Quality checks",
+     "Inspected before the balance is paid.",
+     "Once you have paid in full and the container has sailed, your leverage is gone. We "
+     "inspect against a written checklist, photograph what we find, and hold the balance "
+     "payment until it is right."),
+    ("Shipping solutions",
+     "Sea, rail or air, compared on landed cost.",
+     "We price all three against your lead time and cash position rather than defaulting to "
+     "whatever the supplier quotes, then book and track it."),
+    ("Import support",
+     "Duty, VAT and customs handled properly.",
+     "Commodity codes classified correctly, EORI and deferment in place, incoterms chosen to "
+     "suit you. This is where first-time importers lose money quietly."),
+    ("Amazon FBA warehouse delivery",
+     "Straight into Amazon, not into your garage.",
+     "Goods delivered direct to your FBA warehouse, booked in against your shipment plan, so "
+     "you are not handling pallets or paying to store and forward them yourself."),
+    ("FBA labelling and prep",
+     "To Amazon's spec, first time.",
+     "FNSKU labels, polybags, suffocation warnings, carton marking and box weights done at "
+     "source. Rejected shipments are expensive and slow to fix from six thousand miles away."),
+    ("Private label",
+     "Your brand on the shelf, not a generic.",
+     "Custom product, packaging, inserts and manuals produced at source, with tooling and "
+     "minimum order quantities negotiated on your behalf."),
+]
 
 # --- Service catalogue (drives the services section) -----------------------
 SOURCING_SERVICES = [

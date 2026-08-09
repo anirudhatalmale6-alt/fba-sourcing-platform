@@ -1,0 +1,61 @@
+{% extends "admin/_base.html" %}
+{% set active = 'sequence' %}
+{% block title %}Email sequence{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:16px;flex-wrap:wrap">
+  <h2 style="font-size:22px;margin:0">Email sequence</h2>
+  <form method="post" action="/admin/sequence/run" style="margin:0">
+    <button class="btn ghost" type="submit">Send anything due now</button>
+  </form>
+</div>
+<p class="muted" style="margin:0 0 22px;font-size:14.5px">
+  Every calculator lead is scheduled three follow-ups. The sequence stops automatically the
+  moment someone buys or unsubscribes.
+  {% if not cfg.EMAIL_LIVE %}SMTP is not configured, so sends land in the Outbox where you can
+  read them.{% endif %}
+</p>
+
+<div class="admin-card">
+  <h3>The sequence</h3>
+  <table class="data">
+    <thead><tr><th>Step</th><th>Email</th><th>When</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">0</td><td>{{ steps[0] }}</td><td>Immediately on submission</td></tr>
+      {% for h in hours %}
+      <tr><td class="mono">{{ loop.index }}</td><td>{{ steps[loop.index] }}</td>
+        <td>{{ '%g' % h }} hours after the calculator
+          {%- if h >= 24 %} ({{ '%g' % (h / 24) }} days){% endif %}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="muted" style="font-size:13.5px;margin:14px 0 0">Timings are set by the
+    SEQ_HIDDEN_COSTS_HOURS, SEQ_SOURCING_HOURS and SEQ_OFFER_HOURS settings. Say the word and
+    I will change them.</p>
+</div>
+
+<div class="admin-card">
+  <h3>Scheduled and sent</h3>
+  <table class="data">
+    <thead><tr><th>Lead</th><th>Product</th><th>Step</th><th>Due</th><th>Status</th><th>Sent</th></tr></thead>
+    <tbody>
+      {% for j in jobs %}
+      <tr>
+        <td>{{ j['name'] or '&mdash;'|safe }}<br>
+          <span class="muted" style="font-size:12px">{{ j['email'] }}</span></td>
+        <td>{{ j['product_name'] or '&mdash;'|safe }}</td>
+        <td class="mono">{{ j['step'] }} &mdash; {{ steps[j['step']] }}</td>
+        <td class="mono" style="font-size:12px">{{ j['due_at'][:16].replace('T',' ') }}</td>
+        <td><span class="pill {{ 'sent' if j['status'] == 'sent' else ('queued' if j['status'] == 'scheduled' else 'none') }}">{{ j['status'] }}</span></td>
+        <td class="mono" style="font-size:12px">
+          {% if j['email_id'] %}<a href="/admin/email/{{ j['email_id'] }}">read</a>
+          {% elif j['sent_at'] %}{{ j['sent_at'][:16].replace('T',' ') }}
+          {% else %}&mdash;{% endif %}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="muted">Nothing scheduled yet. Run the calculator and submit
+        the unlock form to see the sequence appear here.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
