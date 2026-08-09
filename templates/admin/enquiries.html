@@ -1,0 +1,23 @@
+{% extends "admin/_base.html" %}
+{% set active = 'enquiries' %}
+{% block title %}Enquiries{% endblock %}
+{% block content %}
+<h2 style="font-size:22px;margin:0 0 18px">Enquiries <span class="muted" style="font-size:15px">({{ enquiries|length }})</span></h2>
+<table class="data">
+  <thead><tr><th>When</th><th>Name</th><th>Email</th><th>Phone</th><th>Interest</th><th>Message</th></tr></thead>
+  <tbody>
+    {% for e in enquiries %}
+    <tr>
+      <td class="mono" style="font-size:12px">{{ e['created_at'][:16].replace('T',' ') }}</td>
+      <td>{{ e['name'] or '&mdash;'|safe }}</td>
+      <td>{{ e['email'] or '' }}</td>
+      <td>{{ e['phone'] or '&mdash;'|safe }}</td>
+      <td>{{ e['service'] or '&mdash;'|safe }}</td>
+      <td style="max-width:420px;font-size:14px">{{ e['message'] or '' }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6" class="muted">No enquiries yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

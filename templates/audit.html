@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}{{ audit_name }} &mdash; {{ brand }}{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="wrap">
+    <div style="max-width:760px">
+      <p class="eyebrow">Automated tier &mdash; &pound;{{ '%g' % audit_price }}</p>
+      <h1>{{ audit_name }}</h1>
+      <p class="lede">You have the numbers. This tells you whether to trust them. Our team
+      runs your product through the full model, stress tests it, and comes back with a
+      written verdict and a plan.</p>
+    </div>
+
+    {% if cancelled %}
+    <div class="notice warn"><h4>Payment cancelled</h4>
+      <p>Nothing was charged. You can pick up where you left off whenever you are ready.</p></div>
+    {% endif %}
+    {% if request.query_params.get('err') == 'payment' %}
+    <div class="notice warn"><h4>We could not start the payment</h4>
+      <p>Nothing was charged. Please try again, or contact us and we will take it from there.</p></div>
+    {% endif %}
+    {% if request.query_params.get('err') == 'email' %}
+    <div class="notice warn"><h4>We need a valid email address</h4>
+      <p>That is where your report and receipt are sent.</p></div>
+    {% endif %}
+
+    <div class="grid-2" style="margin-top:34px;align-items:start">
+      <div>
+        <div class="panel">
+          <h3 style="font-size:20px;margin:0 0 16px">What you receive</h3>
+          <div class="steps" style="grid-template-columns:1fr;border-top:none">
+            <div style="border-right:none;border-bottom:1px solid var(--rule);padding:0 0 16px">
+              <h4>Line-by-line landed cost</h4>
+              <p>Supplier price, freight, insurance, duty, VAT and prep, apportioned per unit
+              with the VAT treatment done correctly for your registration status.</p>
+            </div>
+            <div style="border-right:none;border-bottom:1px solid var(--rule);padding:16px 0">
+              <h4>Pricing positions</h4>
+              <p>Break-even, the price you need for a healthy margin, the price you need for a
+              healthy return on capital, and what happens at five price points around them.</p>
+            </div>
+            <div style="border-right:none;border-bottom:1px solid var(--rule);padding:16px 0">
+              <h4>Stress tests</h4>
+              <p>What your profit does if freight rises 25 percent, the factory lifts its price
+              at reorder, you discount to win the buy box, or ads cost more than planned.</p>
+            </div>
+            <div style="border-right:none;border-bottom:1px solid var(--rule);padding:16px 0">
+              <h4>Risk register</h4>
+              <p>The specific weaknesses in your numbers, in plain English, ranked by how much
+              damage they can do.</p>
+            </div>
+            <div style="border-right:none;border-bottom:none;padding:16px 0 0">
+              <h4>Recommendations and next steps</h4>
+              <p>What we would do with this product, whether that is order it, re-quote it,
+              change the volume, or walk away.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="notice" style="margin-top:22px">
+          <h4>Reviewed by a person before it reaches you</h4>
+          <p>The report is generated from your figures immediately, then a sourcing specialist
+          reads it and adds their own analysis before it is released. You get the speed of the
+          automated model and the judgement of someone who buys from Chinese factories weekly.</p>
+        </div>
+      </div>
+
+      <div>
+        <div class="panel" style="border:2px solid var(--ink)">
+          <span class="eyebrow" style="margin-bottom:8px">Order your audit</span>
+          <div style="font-family:var(--mono);font-size:40px;letter-spacing:-.03em;margin:6px 0 4px">
+            &pound;{{ '%g' % audit_price }}</div>
+          <p class="muted" style="margin:0 0 20px;font-size:14.5px">One-off. Per product. No subscription.</p>
+
+          <form method="post" action="/checkout">
+            <input type="hidden" name="lead_token" value="{{ lead_token }}">
+            {% if not lead_token %}
+            <div class="field">
+              <label>Your name</label>
+              <input type="text" name="name" required placeholder="Jane Smith">
+            </div>
+            <div class="field">
+              <label>Email</label>
+              <input type="email" name="email" required placeholder="jane@company.co.uk">
+              <span class="hint">Your report and receipt are sent here.</span>
+            </div>
+            <div class="field">
+              <label>Product <span class="muted">(optional)</span></label>
+              <input type="text" name="product_name" placeholder="Stainless steel dog bowl">
+            </div>
+            {% else %}
+            <div class="notice" style="margin-bottom:18px">
+              <p>We have your details from the calculator. Your report will be built on the
+              figures you already entered.</p>
+            </div>
+            {% endif %}
+
+            {% if providers|length > 1 %}
+            <div class="field">
+              <label>Pay with</label>
+              <div class="inline-toggle">
+                {% for p in providers %}
+                <label><input type="radio" name="provider" value="{{ p }}" {{ 'checked' if loop.first }}>
+                  <span>{{ 'Card (Stripe)' if p == 'stripe' else ('PayPal' if p == 'paypal' else 'Demo') }}</span></label>
+                {% endfor %}
+              </div>
+            </div>
+            {% else %}
+            <input type="hidden" name="provider" value="{{ providers[0] }}">
+            {% endif %}
+
+            <button class="btn amber wide" type="submit">
+              {% if providers[0] == 'demo' %}Continue to payment{% else %}Pay &pound;{{ '%g' % audit_price }} and start{% endif %}
+            </button>
+          </form>
+
+          <p class="muted" style="font-size:13px;margin:16px 0 0;line-height:1.5">
+            After payment you complete a short questionnaire about the product and supplier.
+            Your report is prepared from that and reviewed before release.</p>
+        </div>
+
+        <div class="panel" style="margin-top:20px">
+          <h3 style="font-size:17px;margin:0 0 10px">Not ready yet?</h3>
+          <p class="muted" style="font-size:15px;margin:0 0 16px">The calculator is free and
+          always will be. Run your product through it first and come back when you want a
+          second opinion.</p>
+          <a class="btn ghost wide" href="/#calculator">Use the free calculator</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,8 @@
+.env
+.env.deploy
+data/
+reports/
+shots/
+__pycache__/
+*.pyc
+*.log

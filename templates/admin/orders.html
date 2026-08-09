@@ -1,0 +1,28 @@
+{% extends "admin/_base.html" %}
+{% set active = 'orders' %}
+{% block title %}Orders{% endblock %}
+{% block content %}
+<h2 style="font-size:22px;margin:0 0 18px">Orders</h2>
+<table class="data">
+  <thead><tr><th>Ref</th><th>Created</th><th>Customer</th><th>Service</th><th>Amount</th>
+    <th>Paid via</th><th>Status</th><th>Report</th><th></th></tr></thead>
+  <tbody>
+    {% for o in orders %}
+    <tr>
+      <td class="mono">{{ o['reference'] }}</td>
+      <td class="mono" style="font-size:12px">{{ o['created_at'][:16].replace('T',' ') }}</td>
+      <td>{{ o['lead_name'] or '&mdash;'|safe }}<br>
+        <span class="muted" style="font-size:12px">{{ o['lead_email'] or '' }}</span></td>
+      <td>{{ o['service'] }}</td>
+      <td class="mono">{{ o['amount_gbp']|money|safe }}</td>
+      <td class="muted" style="font-size:13px">{{ o['provider'] or '&mdash;'|safe }}</td>
+      <td><span class="pill {{ o['status'] }}">{{ o['status'] }}</span></td>
+      <td><span class="pill {{ o['report_status'] }}">{{ o['report_status'].replace('_',' ') }}</span></td>
+      <td><a href="/admin/order/{{ o['id'] }}">Open</a></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="9" class="muted">No orders yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

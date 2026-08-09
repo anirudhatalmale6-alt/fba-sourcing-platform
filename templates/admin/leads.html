@@ -1,0 +1,30 @@
+{% extends "admin/_base.html" %}
+{% set active = 'leads' %}
+{% block title %}Leads{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;gap:16px;flex-wrap:wrap">
+  <h2 style="font-size:22px;margin:0">Leads <span class="muted" style="font-size:15px">({{ leads|length }})</span></h2>
+  <a class="btn ghost" href="/admin/export/leads.csv">Export CSV</a>
+</div>
+<table class="data">
+  <thead><tr><th>When</th><th>Name</th><th>Email</th><th>Phone</th><th>Product</th>
+    <th>Supplier</th><th>Their numbers</th><th>Opt-in</th><th>Source</th></tr></thead>
+  <tbody>
+    {% for l in leads %}
+    <tr>
+      <td class="mono" style="font-size:12px">{{ l['created_at'][:16].replace('T',' ') }}</td>
+      <td>{{ l['name'] or '&mdash;'|safe }}</td>
+      <td>{{ l['email'] or '' }}</td>
+      <td>{{ l['phone'] or '&mdash;'|safe }}</td>
+      <td>{{ l['product_name'] or '&mdash;'|safe }}</td>
+      <td style="max-width:200px;font-size:13px">{{ l['supplier_details'] or '&mdash;'|safe }}</td>
+      <td class="muted" style="font-size:13px;max-width:280px">{{ l['summary'] or '' }}</td>
+      <td>{{ 'Yes' if l['marketing_optin'] else 'No' }}</td>
+      <td class="muted" style="font-size:12px">{{ l['source'] }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="9" class="muted">No leads yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

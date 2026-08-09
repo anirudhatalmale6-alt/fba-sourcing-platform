@@ -1,0 +1,17 @@
+{% extends "admin/_base.html" %}
+{% set active = 'emails' %}
+{% block title %}{{ mail['subject'] }}{% endblock %}
+{% block content %}
+<p style="margin:0 0 8px"><a href="/admin/emails" style="color:var(--muted);text-decoration:none">&larr; Outbox</a></p>
+<h2 style="font-size:20px;margin:0 0 16px">{{ mail['subject'] }}</h2>
+<div class="admin-card">
+  <table class="kv" style="margin-bottom:18px">
+    <tr><th>To</th><td>{{ mail['to_addr'] }}</td></tr>
+    <tr><th>When</th><td class="mono">{{ mail['created_at'].replace('T',' ') }}</td></tr>
+    <tr><th>Type</th><td>{{ mail['kind'] }}</td></tr>
+    <tr><th>Status</th><td><span class="pill {{ mail['status'] }}">{{ mail['status'] }}</span>
+      {% if mail['error'] %}<br><span class="muted" style="font-size:13px">{{ mail['error'] }}</span>{% endif %}</td></tr>
+  </table>
+  <pre class="mailbody">{{ mail['body'] }}</pre>
+</div>
+{% endblock %}

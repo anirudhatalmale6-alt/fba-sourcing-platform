@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}China sourcing &amp; Amazon FBA services &mdash; {{ brand }}{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="wrap">
+    <div style="max-width:800px">
+      <p class="eyebrow">Sourcing &amp; FBA</p>
+      <h1>We deal with the factory so you can deal with the business.</h1>
+      <p class="lede">Most UK sellers buy from a trading company without knowing it, pay a
+      margin they cannot see, and find out about quality problems when the reviews arrive.
+      We work directly with manufacturers, in Mandarin, in your interest.</p>
+    </div>
+  </div>
+</div>
+
+<section class="band tint">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">What we handle</p>
+      <h2>The whole chain, from factory floor to Amazon shelf</h2>
+    </div>
+    <div class="svc" style="border-top-color:var(--rule-2)">
+      {% for name, blurb in services %}
+      <div><b>{{ '%02d' % loop.index }}</b><div><h4>{{ name }}</h4><p>{{ blurb }}</p></div></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="band" id="quality">
+  <div class="wrap">
+    <div class="grid-2">
+      <div>
+        <p class="eyebrow">Quality control</p>
+        <h2 style="font-size:30px;margin-bottom:14px">The inspection happens before the
+        balance is paid, not after</h2>
+        <p class="muted" style="font-size:17px">Once you have paid in full and the container
+        has sailed, your leverage is gone. We inspect against a written checklist agreed with
+        you, photograph what we find, and hold the balance payment until it is right.</p>
+      </div>
+      <div class="panel">
+        <table class="kv">
+          <tr><th>Supplier verification</th><td>Business licence, export history and a video
+            walk of the production line. We confirm you are buying from the factory.</td></tr>
+          <tr><th>Written specification</th><td>Materials, dimensions, tolerances, packaging
+            and labelling agreed in writing before tooling starts.</td></tr>
+          <tr><th>Sample approval</th><td>Golden sample signed off by you and retained as the
+            reference for the production run.</td></tr>
+          <tr><th>Pre-shipment inspection</th><td>AQL sampling against the checklist, with a
+            photographic report before the balance is released.</td></tr>
+          <tr><th>FBA compliance</th><td>Carton marking, FNSKU labels, polybagging and
+            suffocation warnings to Amazon's current spec.</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band dark">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Import support</p>
+      <h2>Duty, VAT and customs handled properly</h2>
+      <p>The paperwork is where first-time importers lose money quietly. Wrong commodity code,
+      wrong incoterm, no EORI, import VAT paid and never reclaimed.</p>
+    </div>
+    <div class="grid-3">
+      <div class="card" style="background:transparent;border-color:#2b3d52">
+        <span class="n">01</span>
+        <h3 style="color:#fff">Commodity codes</h3>
+        <p style="color:#a9b7c6">Classified correctly at the outset, so the duty you budget
+        for is the duty you pay.</p>
+      </div>
+      <div class="card" style="background:transparent;border-color:#2b3d52">
+        <span class="n">02</span>
+        <h3 style="color:#fff">Incoterms that suit you</h3>
+        <p style="color:#a9b7c6">FOB, EXW, DDP compared on real landed cost rather than on
+        whichever the supplier prefers to quote.</p>
+      </div>
+      <div class="card" style="background:transparent;border-color:#2b3d52">
+        <span class="n">03</span>
+        <h3 style="color:#fff">VAT and deferment</h3>
+        <p style="color:#a9b7c6">Import VAT accounted for so it is reclaimed rather than
+        written off, and cash flow planned around it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap narrow" style="text-align:center">
+    <h2 style="font-size:clamp(24px,3vw,34px);margin-bottom:14px">Start with the numbers.</h2>
+    <p class="muted" style="font-size:18px;margin:0 auto 26px;max-width:34em">Run your product
+    through the calculator, then let us tell you what we would do with it.</p>
+    <a class="btn amber" href="/#calculator">Use the calculator</a>
+    <a class="btn ghost" href="/contact?service=premium" style="margin-left:8px">Talk to the team</a>
+  </div>
+</section>
+{% endblock %}

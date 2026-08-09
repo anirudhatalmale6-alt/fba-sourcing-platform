@@ -1,0 +1,69 @@
+{% extends "admin/_base.html" %}
+{% set active = 'home' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h2 style="font-size:22px;margin:0 0 18px">Dashboard</h2>
+
+{% if not cfg.EMAIL_LIVE or not cfg.PAYMENTS_LIVE %}
+<div class="notice warn" style="margin-bottom:22px">
+  <h4>Running in test configuration</h4>
+  <p>
+    {% if not cfg.PAYMENTS_LIVE %}No payment gateway keys are set, so checkout uses the demo
+    step.{% endif %}
+    {% if not cfg.EMAIL_LIVE %} No SMTP is configured, so emails are composed and stored in
+    the Outbox rather than sent.{% endif %}
+    Everything else behaves exactly as it will in production.
+  </p>
+</div>
+{% endif %}
+
+<div class="stat-row">
+  <div class="stat"><span>Leads</span><strong>{{ stats.leads }}</strong></div>
+  <div class="stat"><span>Orders</span><strong>{{ stats.orders }}</strong></div>
+  <div class="stat"><span>Paid</span><strong>{{ stats.paid }}</strong></div>
+  <div class="stat"><span>Revenue</span><strong>{{ stats.revenue|money|safe }}</strong></div>
+  <div class="stat"><span>Awaiting review</span><strong>{{ stats.awaiting }}</strong></div>
+  <div class="stat"><span>Enquiries</span><strong>{{ stats.enquiries }}</strong></div>
+</div>
+
+<div class="admin-card">
+  <h3>Latest orders</h3>
+  {% if orders %}
+  <table class="data">
+    <thead><tr><th>Ref</th><th>Customer</th><th>Amount</th><th>Status</th><th>Report</th><th></th></tr></thead>
+    <tbody>
+      {% for o in orders %}
+      <tr>
+        <td class="mono">{{ o['reference'] }}</td>
+        <td>{{ o['lead_name'] or '&mdash;'|safe }}<br><span class="muted" style="font-size:12px">{{ o['lead_email'] or '' }}</span></td>
+        <td class="mono">{{ o['amount_gbp']|money|safe }}</td>
+        <td><span class="pill {{ o['status'] }}">{{ o['status'] }}</span></td>
+        <td><span class="pill {{ o['report_status'] }}">{{ o['report_status'].replace('_',' ') }}</span></td>
+        <td><a href="/admin/order/{{ o['id'] }}">Open</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="muted">No orders yet.</p>{% endif %}
+</div>
+
+<div class="admin-card">
+  <h3>Latest leads</h3>
+  {% if leads %}
+  <table class="data">
+    <thead><tr><th>When</th><th>Name</th><th>Email</th><th>Product</th><th>Their numbers</th></tr></thead>
+    <tbody>
+      {% for l in leads %}
+      <tr>
+        <td class="mono" style="font-size:12px">{{ l['created_at'][:16].replace('T',' ') }}</td>
+        <td>{{ l['name'] or '&mdash;'|safe }}</td>
+        <td>{{ l['email'] or '' }}</td>
+        <td>{{ l['product_name'] or '&mdash;'|safe }}</td>
+        <td class="muted" style="font-size:13px">{{ l['summary'] or '' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="muted">No leads yet.</p>{% endif %}
+</div>
+{% endblock %}

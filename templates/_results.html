@@ -1,0 +1,147 @@
+{# Results pane. Gated = headline figures only, with the lead form beneath. #}
+<div class="verdict {{ res.verdict }}">
+  <h4>{% if res.verdict == 'strong' %}These numbers work
+      {% elif res.verdict == 'workable' %}Viable, with less room than ideal
+      {% elif res.verdict == 'thin' %}Tight &mdash; worth re-quoting
+      {% elif res.verdict == 'loss' %}This loses money on every unit
+      {% else %}Add a selling price{% endif %}</h4>
+  <p>{{ res.verdict_note }}</p>
+</div>
+
+<div class="figs">
+  <div class="fig hero-fig">
+    <span>Landed cost per unit</span>
+    <strong>{{ res.landed_unit|money|safe }}</strong>
+  </div>
+  <div class="fig">
+    <span>Break-even price</span>
+    <strong>{{ res.break_even|money|safe }}</strong>
+  </div>
+  <div class="fig">
+    <span>Cash needed up front</span>
+    <strong>{{ res.cash_out|money|safe }}</strong>
+  </div>
+</div>
+
+<div class="{% if gated %}blurred{% endif %}">
+  {% if res.price > 0 %}
+  <div class="figs">
+    <div class="fig">
+      <span>Profit per unit</span>
+      <strong class="{{ 'neg' if res.profit_unit < 0 else 'pos' }}">{{ res.profit_unit|money|safe }}</strong>
+    </div>
+    <div class="fig">
+      <span>Net margin</span>
+      <strong class="{{ 'neg' if res.margin_pct < 0 else '' }}">{{ '%.1f' % res.margin_pct }}%</strong>
+    </div>
+    <div class="fig">
+      <span>Return on investment</span>
+      <strong class="{{ 'neg' if res.roi_pct < 0 else '' }}">{{ '%.0f' % res.roi_pct }}%</strong>
+    </div>
+    <div class="fig">
+      <span>Profit on {{ res.qty|int }} units</span>
+      <strong class="{{ 'neg' if res.profit_total < 0 else 'pos' }}">{{ res.profit_total|money|safe }}</strong>
+    </div>
+  </div>
+  {% endif %}
+
+  <table class="breakdown">
+    <tr><td>Supplier price</td><td class="num">{{ res.unit_cost_gbp|money|safe }}</td></tr>
+    <tr><td>Freight per unit</td><td class="num">{{ res.freight_unit|money|safe }}</td></tr>
+    {% if res.insurance_unit > 0 %}
+    <tr><td>Insurance per unit</td><td class="num">{{ res.insurance_unit|money|safe }}</td></tr>{% endif %}
+    <tr><td>Duty ({{ '%.1f' % res.inputs.duty_pct }}%)</td><td class="num">{{ res.duty_unit|money|safe }}</td></tr>
+    <tr>
+      <td>Import VAT{% if res.import_vat_reclaimable %} <em class="muted">(reclaimed)</em>{% endif %}</td>
+      <td class="num">{% if res.import_vat_reclaimable %}<span class="muted">{{ res.import_vat_unit|money|safe }}</span>{% else %}{{ res.import_vat_unit|money|safe }}{% endif %}</td>
+    </tr>
+    {% if res.other_unit > 0 %}
+    <tr><td>Other landed costs</td><td class="num">{{ res.other_unit|money|safe }}</td></tr>{% endif %}
+    <tr class="total"><td>Landed cost</td><td class="num">{{ res.landed_unit|money|safe }}</td></tr>
+    {% if res.price > 0 %}
+    <tr><td style="padding-top:14px">Selling price</td><td class="num" style="padding-top:14px">{{ res.price|money|safe }}</td></tr>
+    {% if res.inputs.vat_registered %}
+    <tr><td>VAT to HMRC</td><td class="num neg">&minus;{{ res.vat_due|money|safe }}</td></tr>{% endif %}
+    <tr><td>Amazon referral ({{ '%.1f' % res.inputs.referral_pct }}%)</td><td class="num neg">&minus;{{ res.referral_fee|money|safe }}</td></tr>
+    <tr><td>FBA fulfilment fee</td><td class="num neg">&minus;{{ res.fba_fee|money|safe }}</td></tr>
+    {% if res.other_selling_per_unit > 0 %}
+    <tr><td>Ads, storage, returns</td><td class="num neg">&minus;{{ res.other_selling_per_unit|money|safe }}</td></tr>{% endif %}
+    <tr><td>Landed cost</td><td class="num neg">&minus;{{ res.landed_unit|money|safe }}</td></tr>
+    <tr class="total"><td>Profit per unit</td>
+      <td class="num {{ 'neg' if res.profit_unit < 0 else '' }}">{{ res.profit_unit|money|safe }}</td></tr>
+    {% endif %}
+  </table>
+
+  {% if not gated %}
+  <div class="figs">
+    <div class="fig">
+      <span>Price for {{ '%.0f' % res.target_margin_pct }}% margin</span>
+      <strong>{{ res.target_price|money|safe }}</strong>
+    </div>
+    <div class="fig">
+      <span>Price for {{ '%.0f' % res.target_roi_pct }}% ROI</span>
+      <strong>{{ res.roi_price|money|safe }}</strong>
+    </div>
+  </div>
+  {% if res.flags %}
+  <div class="flags">
+    <h5>Worth checking</h5>
+    <ul>{% for f in res.flags %}<li>{{ f }}</li>{% endfor %}</ul>
+  </div>
+  {% endif %}
+  {% endif %}
+</div>
+
+{% if gated %}
+<div class="gate">
+  <h4>See the full breakdown</h4>
+  <p>Tell us where to send it and we will unlock your profit, margin and ROI figures here,
+  plus email you the complete breakdown to keep.</p>
+  <form id="gateform">
+    <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off">
+    <div class="row">
+      <div class="field">
+        <label>Your name</label>
+        <input type="text" name="name" required placeholder="Jane Smith">
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" name="email" required placeholder="jane@company.co.uk">
+      </div>
+    </div>
+    <div class="field">
+      <label>What is the product? <span class="muted">(optional)</span></label>
+      <input type="text" name="product_name" placeholder="Stainless steel dog bowl, 18cm">
+    </div>
+    <div class="field">
+      <label>Do you have a supplier yet? <span class="muted">(optional)</span></label>
+      <input type="text" name="supplier_details" placeholder="Alibaba supplier, Ningbo &mdash; quoted $2.10 at 500 MOQ">
+      <span class="hint">Factory name, city, quoted price or MOQ &mdash; whatever you have.</span>
+    </div>
+    <div class="field">
+      <label>Anything else we should know? <span class="muted">(optional)</span></label>
+      <textarea name="notes" placeholder="First time importing, unsure about duty on this category."></textarea>
+    </div>
+    <div class="field" style="font-family:var(--sans);font-size:13px;color:#4a5462">
+      <label style="display:flex;gap:9px;align-items:flex-start;cursor:pointer">
+        <input type="checkbox" name="marketing_optin" value="1" style="width:auto;margin-top:3px">
+        <span>Send me occasional sourcing and import tips. No spam, unsubscribe any time.</span>
+      </label>
+    </div>
+    <button class="btn amber wide" type="submit">Unlock my full breakdown</button>
+  </form>
+</div>
+{% else %}
+<div class="gate" style="border-left:4px solid var(--amber)">
+  <h4>{% if lead_name %}Thanks {{ lead_name }} &mdash; that is on its way{% else %}Your breakdown is on its way{% endif %}
+    <span class="tick">&check;</span></h4>
+  <p>We have emailed the full breakdown to keep. The figures above are only as good as the
+  quotes behind them &mdash; and freight, duty and factory pricing are exactly where first-time
+  importers get caught.</p>
+  <p><strong>{{ audit_name }} &mdash; &pound;{{ '%g' % audit_price }}.</strong> Our sourcing team
+  re-quotes your product against our factory network, prices the freight properly, checks
+  your supplier is a factory and not a reseller, and tells you honestly whether this product
+  is worth importing.</p>
+  <a class="btn amber wide" href="/audit?lead={{ lead_token }}">Get my product audited &mdash; &pound;{{ '%g' % audit_price }}</a>
+</div>
+{% endif %}

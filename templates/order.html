@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Your order {{ order['reference'] }} &mdash; {{ brand }}{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="wrap">
+    {% if order['status'] != 'paid' %}
+      <div style="max-width:720px">
+        <h1>Order {{ order['reference'] }}</h1>
+        <div class="notice warn"><h4>Payment not completed</h4>
+          <p>We have your order but no payment against it yet. If you believe this is wrong,
+          contact us with the reference above and we will sort it out.</p></div>
+        <a class="btn amber" href="/audit">Return to checkout</a>
+      </div>
+
+    {% elif order['questionnaire'] %}
+      <div style="max-width:720px">
+        <p class="eyebrow">Reference {{ order['reference'] }}</p>
+        <h1>Your details are in.</h1>
+        <div class="notice"><h4>Report ready</h4>
+          <p>Your audit has been prepared and is with a sourcing specialist for review. You
+          can read it now, and we will email you if anything is added.</p></div>
+        <a class="btn amber" href="/report/{{ order['token'] }}">Read my report</a>
+      </div>
+
+    {% else %}
+      <div style="max-width:760px">
+        {% if just_paid %}
+        <div class="notice"><h4>Payment received &mdash; thank you</h4>
+          <p>Reference <strong>{{ order['reference'] }}</strong>. A confirmation is on its way
+          to your inbox.</p></div>
+        {% endif %}
+        <p class="eyebrow">Step 2 of 2 &mdash; reference {{ order['reference'] }}</p>
+        <h1>Tell us about the product.</h1>
+        <p class="lede">This is what the audit is built on. Anything you do not know yet, leave
+        blank &mdash; that itself tells us something useful.</p>
+      </div>
+
+      <div class="panel" style="margin-top:26px;max-width:860px">
+        <form method="post" action="/order/{{ order['token'] }}/questionnaire">
+          <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off">
+
+          <fieldset>
+            <legend>The product</legend>
+            <div class="row">
+              <div class="field"><label>Product name</label>
+                <input type="text" name="product_name"
+                  value="{{ lead['product_name'] if lead and lead['product_name'] else '' }}"></div>
+              <div class="field"><label>Amazon category</label>
+                <input type="text" name="category" placeholder="Pet supplies"></div>
+            </div>
+            <div class="row">
+              <div class="field"><label>Target selling price (inc VAT)</label>
+                <input type="number" name="target_price" step="0.01" min="0" placeholder="14.99">
+                <span class="hint">If this differs from the calculator we will use this figure.</span></div>
+              <div class="field"><label>Order quantity you have in mind</label>
+                <input type="number" name="moq" step="1" min="1" placeholder="500"></div>
+            </div>
+            <div class="field"><label>Link to a competing listing <span class="muted">(optional)</span></label>
+              <input type="text" name="competitor" placeholder="amazon.co.uk/dp/..."></div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Your supplier</legend>
+            <div class="row">
+              <div class="field"><label>Supplier or factory name</label>
+                <input type="text" name="supplier_name" placeholder="Leave blank if you have not chosen one"></div>
+              <div class="field"><label>Location</label>
+                <input type="text" name="supplier_location" placeholder="Ningbo, Zhejiang"></div>
+            </div>
+            <div class="row">
+              <div class="field"><label>Quoted unit price</label>
+                <input type="number" name="supplier_price" step="0.01" min="0" placeholder="2.10"></div>
+              <div class="field"><label>Samples received?</label>
+                <select name="samples">
+                  <option value="">Please choose</option>
+                  <option>Not yet requested</option>
+                  <option>Requested, waiting</option>
+                  <option>Received, happy with them</option>
+                  <option>Received, quality concerns</option>
+                </select></div>
+            </div>
+            <div class="field"><label>How did you find them? <span class="muted">(optional)</span></label>
+              <input type="text" name="supplier_source" placeholder="Alibaba, trade show, referral"></div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Requirements</legend>
+            <div class="row">
+              <div class="field"><label>Private label / own brand?</label>
+                <select name="private_label">
+                  <option value="">Please choose</option>
+                  <option>Yes, own brand from the start</option>
+                  <option>Generic for now, brand later</option>
+                  <option>No, generic only</option>
+                </select></div>
+              <div class="field"><label>Target launch date</label>
+                <input type="text" name="launch_date" placeholder="Before Q4"></div>
+            </div>
+            <div class="field"><label>Packaging requirements <span class="muted">(optional)</span></label>
+              <input type="text" name="packaging" placeholder="Printed retail box, insert card"></div>
+            <div class="field"><label>Certifications needed <span class="muted">(optional)</span></label>
+              <input type="text" name="certifications" placeholder="UKCA, CE, food contact, REACH"></div>
+            <div class="field"><label>What worries you most about this product?</label>
+              <textarea name="concerns" placeholder="Whether the margin survives ad costs, or whether the supplier is really a factory."></textarea></div>
+          </fieldset>
+
+          <button class="btn amber wide" type="submit">Submit and generate my report</button>
+          <p class="muted" style="font-size:13px;margin:14px 0 0;text-align:center">
+            Your report is generated immediately, then reviewed by a specialist before release.</p>
+        </form>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

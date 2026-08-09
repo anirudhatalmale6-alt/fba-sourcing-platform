@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+{% block title %}{{ brand }} &mdash; Amazon FBA landed cost calculator &amp; China sourcing{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">China to Amazon UK &mdash; costed properly</p>
+        <h1>Know what a product really costs <em>before</em> you wire the deposit.</h1>
+        <p class="lede">Most importers find out their margin after the container lands. Our
+        calculator gives you the true landed cost, break-even price and profit per unit in
+        under a minute &mdash; including the duty and VAT treatment that catches people out.</p>
+        <div class="hero-cta">
+          <a class="btn amber" href="#calculator">Run the numbers &mdash; free</a>
+          <a class="btn ghost" href="/services">See how we source</a>
+        </div>
+        <p class="hero-note">No account needed. We only ask for your details once you have
+        seen your figures.</p>
+      </div>
+      <div class="docket">
+        <h4>What sellers get wrong <b>3 of 4</b></h4>
+        <ul>
+          <li><span>Import VAT treated as a cost</span><b>&minus;20%</b></li>
+          <li><span>Referral fee taken on net, not gross</span><b>&minus;3%</b></li>
+          <li><span>Freight left out entirely</span><b>varies</b></li>
+          <li><span>No allowance for ads or returns</span><b>&minus;&pound;2+</b></li>
+          <li><span>Duty rate guessed, not checked</span><b>&plusmn;12%</b></li>
+        </ul>
+        <div style="padding:0 18px 18px">
+          <p class="muted" style="font-size:13.5px;margin:0;line-height:1.5">Each one on its
+          own looks small. Together they are the difference between a product that pays for
+          itself and one that quietly loses money on every unit.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="band" id="calculator">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">The calculator</p>
+      <h2>Amazon FBA landed cost &amp; profit calculator</h2>
+      <p>Fill in what you know. Anything you leave blank is treated as zero, and we will
+      tell you when that is hiding a real cost.</p>
+    </div>
+
+    <div class="calc">
+      <div class="calc-form">
+        <form id="calcform">
+          <fieldset>
+            <legend>The product</legend>
+            <div class="field">
+              <label>Product name</label>
+              <input type="text" name="product_name" placeholder="Stainless steel dog bowl">
+            </div>
+            <div class="row">
+              <div class="field">
+                <label>Order quantity</label>
+                <input type="number" name="quantity" value="500" min="1" step="1">
+              </div>
+              <div class="field">
+                <label>Cost per unit</label>
+                <input type="number" name="unit_cost" value="2.10" min="0" step="0.01">
+              </div>
+            </div>
+            <div class="row">
+              <div class="field">
+                <label>Cost currency</label>
+                <select name="cost_currency" id="costccy">
+                  <option value="GBP">GBP &pound;</option>
+                  <option value="USD" selected>USD $</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>USD to GBP rate</label>
+                <input type="number" name="fx_usd_gbp" value="{{ defaults.fx }}" min="0.01" step="0.001">
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Getting it here</legend>
+            <div class="row">
+              <div class="field">
+                <label>Total freight from China</label>
+                <input type="number" name="freight_total" value="620" min="0" step="0.01">
+                <span class="hint">Whole shipment, not per unit</span>
+              </div>
+              <div class="field">
+                <label>Freight currency</label>
+                <select name="freight_currency">
+                  <option value="GBP">GBP &pound;</option>
+                  <option value="USD" selected>USD $</option>
+                </select>
+              </div>
+            </div>
+            <div class="row three">
+              <div class="field">
+                <label>Insurance</label>
+                <input type="number" name="insurance_total" value="0" min="0" step="0.01">
+              </div>
+              <div class="field">
+                <label>Duty %</label>
+                <input type="number" name="duty_pct" value="{{ defaults.duty_pct }}" min="0" step="0.1">
+              </div>
+              <div class="field">
+                <label>VAT %</label>
+                <input type="number" name="vat_rate" value="{{ defaults.vat_rate }}" min="0" step="0.5">
+              </div>
+            </div>
+            <div class="field">
+              <label>Are you VAT registered?</label>
+              <div class="inline-toggle">
+                <label><input type="radio" name="vat_registered" value="yes" checked><span>Yes &mdash; I reclaim import VAT</span></label>
+                <label><input type="radio" name="vat_registered" value="no"><span>No</span></label>
+              </div>
+              <span class="hint">This single answer moves the margin by roughly a fifth.</span>
+            </div>
+            <div class="field">
+              <label>Other landed costs (total)</label>
+              <input type="number" name="other_costs_total" value="150" min="0" step="0.01">
+              <span class="hint">Inspection, prep, labelling, tooling, customs clearance</span>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Selling on Amazon</legend>
+            <div class="row">
+              <div class="field">
+                <label>Selling price (inc VAT)</label>
+                <input type="number" name="selling_price" value="14.99" min="0" step="0.01">
+              </div>
+              <div class="field">
+                <label>Referral fee %</label>
+                <input type="number" name="referral_pct" value="{{ defaults.referral_pct }}" min="0" step="0.5">
+              </div>
+            </div>
+            <div class="row">
+              <div class="field">
+                <label>FBA fee per unit</label>
+                <input type="number" name="fba_fee" value="2.85" min="0" step="0.01">
+              </div>
+              <div class="field">
+                <label>Ads, storage, returns per unit</label>
+                <input type="number" name="other_selling_per_unit" value="1.50" min="0" step="0.01">
+              </div>
+            </div>
+          </fieldset>
+
+          <button class="btn amber wide" type="submit">Calculate my numbers</button>
+        </form>
+      </div>
+
+      <div class="calc-out" id="results">
+        <div class="res-empty">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h8M8 14h4"/>
+          </svg>
+          <p>Your landed cost, break-even price and profit per unit will appear here.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band tint">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">How it works</p>
+      <h2>From a number on a screen to stock in Amazon's warehouse</h2>
+    </div>
+    <div class="steps">
+      <div>
+        <h4>Cost it honestly</h4>
+        <p>Use the calculator to see whether the product can carry a margin at all. It is
+        free and it takes a minute.</p>
+      </div>
+      <div>
+        <h4>Have it checked</h4>
+        <p>Our team re-quotes the product against our factory network and tells you where
+        your figures are optimistic.</p>
+      </div>
+      <div>
+        <h4>We source and inspect</h4>
+        <p>Factory selected, price negotiated, samples approved, goods inspected before the
+        balance is paid.</p>
+      </div>
+      <div>
+        <h4>Delivered into FBA</h4>
+        <p>Prepped, labelled and shipped into your Amazon warehouse. You handle the listing,
+        we handle the supply chain.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band dark" id="sourcing">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Our advantage</p>
+      <h2>A trusted supplier network in China, working for you</h2>
+      <p>We are not a directory and we are not a middleman marking up a trading company's
+      quote. We deal with factories directly, in Mandarin, on your behalf.</p>
+    </div>
+    <div class="svc">
+      {% for name, blurb in services %}
+      <div><b>{{ '%02d' % loop.index }}</b><div><h4>{{ name }}</h4><p>{{ blurb }}</p></div></div>
+      {% endfor %}
+    </div>
+    <p style="margin-top:28px"><a class="btn amber" href="/services">How the sourcing service works</a></p>
+  </div>
+</section>
+
+<section class="band" id="pricing">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Two ways to work with us</p>
+      <h2>Start with an audit. Move to full sourcing when the numbers justify it.</h2>
+      <p>The calculator is free and always will be. Beyond that you are paying for our time,
+      our factory relationships and our judgement.</p>
+    </div>
+    <div class="tiers">
+      <div class="tier">
+        <span class="tag">Automated</span>
+        <h3>{{ audit_name }}</h3>
+        <p class="sub">Your product, run through our model and returned as a written report.</p>
+        <div class="price">&pound;{{ '%g' % audit_price }} <small>one-off</small></div>
+        <ul>
+          <li>Full landed cost breakdown, line by line</li>
+          <li>Break-even and recommended pricing positions</li>
+          <li>Stress tests: freight rises, price war, ad costs</li>
+          <li>Risk register on your specific numbers</li>
+          <li>Written recommendations and next steps</li>
+          <li>Reviewed by a sourcing specialist before release</li>
+        </ul>
+        <a class="btn wide" href="/audit">Order the audit</a>
+      </div>
+      <div class="tier feature">
+        <span class="tag">Premium &mdash; done for you</span>
+        <h3>{{ premium_name }}</h3>
+        <p class="sub">We take the product from idea to stock in Amazon's warehouse.</p>
+        <div class="price">from &pound;{{ '%g' % premium_price }} <small>+ per project</small></div>
+        <ul>
+          <li>Everything in the {{ audit_name }}</li>
+          <li>Personal product analysis by our sourcing team</li>
+          <li>Factory identification and verification</li>
+          <li>Price and terms negotiated on your behalf</li>
+          <li>Sample management and approval</li>
+          <li>Pre-shipment quality inspection with photographs</li>
+          <li>Freight, customs and import paperwork</li>
+          <li>Private label, packaging and branding</li>
+          <li>FNSKU labelling, prep and delivery into FBA</li>
+        </ul>
+        <a class="btn amber wide" href="/contact?service=premium">Talk to the sourcing team</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band tint">
+  <div class="wrap narrow" style="text-align:center">
+    <h2 style="font-size:clamp(24px,3vw,34px);margin-bottom:14px">Cost it before you commit to it.</h2>
+    <p class="muted" style="font-size:18px;margin:0 auto 26px;max-width:34em">The calculator
+    costs nothing and takes a minute. It is the cheapest due diligence you will ever do on a
+    product.</p>
+    <a class="btn amber" href="#calculator">Run the numbers</a>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  var form = document.getElementById('calcform');
+  var out = document.getElementById('results');
+
+  function post(url, fd, then) {
+    fetch(url, { method: 'POST', body: fd })
+      .then(function (r) { return r.text(); })
+      .then(function (html) {
+        out.innerHTML = html;
+        wireGate();
+        if (then) then();
+      })
+      .catch(function () {
+        out.innerHTML = '<div class="formerr">Something went wrong working that out. ' +
+          'Please check your figures and try again.</div>';
+      });
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var btn = form.querySelector('button[type=submit]');
+    btn.disabled = true; btn.textContent = 'Working it out...';
+    post('/calculate', new FormData(form), function () {
+      btn.disabled = false; btn.textContent = 'Recalculate';
+      if (window.innerWidth < 960) {
+        out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // The lead form is injected with the results, so wire it up each time.
+  function wireGate() {
+    var gate = out.querySelector('#gateform');
+    if (!gate) return;
+    gate.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var fd = new FormData(form);          // carry the figures through
+      new FormData(gate).forEach(function (v, k) { fd.set(k, v); });
+      var btn = gate.querySelector('button[type=submit]');
+      btn.disabled = true; btn.textContent = 'Sending your breakdown...';
+      post('/lead', fd);
+    });
+  }
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}Admin{% endblock %} &mdash; {{ brand }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body class="admin">
+{% block body %}
+<div class="admin-bar">
+  <div>
+    <span class="brand">{{ brand }}</span>
+    <a href="/admin" class="{{ 'on' if active == 'home' }}">Dashboard</a>
+    <a href="/admin/orders" class="{{ 'on' if active == 'orders' }}">Orders</a>
+    <a href="/admin/leads" class="{{ 'on' if active == 'leads' }}">Leads</a>
+    <a href="/admin/enquiries" class="{{ 'on' if active == 'enquiries' }}">Enquiries</a>
+    <a href="/admin/emails" class="{{ 'on' if active == 'emails' }}">Outbox</a>
+  </div>
+  <div>
+    <a href="/" target="_blank">View site</a>
+    <a href="/admin/logout">Sign out</a>
+  </div>
+</div>
+<div class="admin-wrap">
+  {% block content %}{% endblock %}
+</div>
+{% endblock %}
+</body>
+</html>

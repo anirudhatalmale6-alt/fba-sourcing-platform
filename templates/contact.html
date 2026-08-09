@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Contact &mdash; {{ brand }}{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="wrap">
+    <div style="max-width:720px">
+      <p class="eyebrow">Get in touch</p>
+      <h1>Tell us about the product.</h1>
+      <p class="lede">The more you can tell us up front &mdash; category, target price, whether
+      you have a supplier &mdash; the more useful our first reply will be.</p>
+    </div>
+
+    {% if sent %}
+    <div class="notice"><h4>Thank you, that has reached us</h4>
+      <p>We read every enquiry and reply personally, usually within one working day.</p></div>
+    {% endif %}
+
+    <div class="grid-2" style="margin-top:30px;align-items:start">
+      <div class="panel">
+        <form method="post" action="/contact">
+          <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off">
+          <div class="row">
+            <div class="field"><label>Your name</label>
+              <input type="text" name="name" required></div>
+            <div class="field"><label>Email</label>
+              <input type="email" name="email" required></div>
+          </div>
+          <div class="row">
+            <div class="field"><label>Phone <span class="muted">(optional)</span></label>
+              <input type="tel" name="phone"></div>
+            <div class="field"><label>What do you need?</label>
+              <select name="service">
+                <option value="sourcing" {{ 'selected' if request.query_params.get('service') == 'premium' }}>Full sourcing &amp; FBA launch</option>
+                <option value="audit">Product profit audit</option>
+                <option value="quality">Quality control only</option>
+                <option value="freight">Freight &amp; import support</option>
+                <option value="other">Something else</option>
+              </select></div>
+          </div>
+          <div class="field"><label>Tell us about the product</label>
+            <textarea name="message" required style="min-height:150px"
+              placeholder="Category, rough target price, order quantity you have in mind, and whether you already have a supplier."></textarea></div>
+          <button class="btn amber wide" type="submit">Send enquiry</button>
+        </form>
+      </div>
+
+      <div>
+        <div class="panel">
+          <h3 style="font-size:18px;margin:0 0 12px">What happens next</h3>
+          <table class="kv">
+            <tr><th>Step one</th><td>We read your enquiry and come back with questions or an
+              initial view, usually within a working day.</td></tr>
+            <tr><th>Step two</th><td>If it looks workable we quote the product against our
+              factory network so you can compare real numbers.</td></tr>
+            <tr><th>Step three</th><td>You decide whether to proceed. There is no retainer to
+              have that conversation.</td></tr>
+          </table>
+        </div>
+        <div class="panel" style="margin-top:20px">
+          <h3 style="font-size:18px;margin:0 0 10px">Want numbers first?</h3>
+          <p class="muted" style="font-size:15px;margin:0 0 16px">The calculator is free. Most
+          people find it answers the question before they need us at all.</p>
+          <a class="btn ghost wide" href="/#calculator">Run the calculator</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

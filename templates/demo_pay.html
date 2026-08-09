@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Payment &mdash; {{ order['reference'] }}{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="wrap narrow">
+    <div class="notice warn">
+      <h4>Demo payment step</h4>
+      <p>No card processor is connected yet, so this page stands in for the Stripe or PayPal
+      checkout. Everything after it &mdash; confirmation email, questionnaire, report
+      generation and the admin record &mdash; behaves exactly as it will in production. Add
+      gateway keys and this page disappears from the flow automatically.</p>
+    </div>
+
+    <div class="panel" style="border:2px solid var(--ink);max-width:460px">
+      <p class="eyebrow">Payment request</p>
+      <table class="kv">
+        <tr><th>Reference</th><td class="mono">{{ order['reference'] }}</td></tr>
+        <tr><th>Service</th><td>{{ order['service'] }}</td></tr>
+        <tr><th>Amount</th><td class="mono"><strong>{{ order['amount_gbp']|money|safe }}</strong></td></tr>
+      </table>
+      <form method="post" action="/pay/demo/{{ order['token'] }}" style="margin-top:22px">
+        <button class="btn amber wide" type="submit">Simulate successful payment</button>
+      </form>
+      <p class="muted" style="font-size:13px;margin:14px 0 0;text-align:center">
+        <a href="/audit?cancelled=1">Cancel and go back</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "admin/_base.html" %}
+{% set active = 'emails' %}
+{% block title %}Outbox{% endblock %}
+{% block content %}
+<h2 style="font-size:22px;margin:0 0 8px">Outbox</h2>
+<p class="muted" style="margin:0 0 20px;font-size:14.5px">
+  Every message the system composes is recorded here.
+  {% if not cfg.EMAIL_LIVE %}SMTP is not configured, so these are stored rather than sent
+  &mdash; useful for checking the wording before going live.{% endif %}
+</p>
+<table class="data">
+  <thead><tr><th>When</th><th>To</th><th>Subject</th><th>Type</th><th>Status</th><th></th></tr></thead>
+  <tbody>
+    {% for m in emails %}
+    <tr>
+      <td class="mono" style="font-size:12px">{{ m['created_at'][:16].replace('T',' ') }}</td>
+      <td>{{ m['to_addr'] }}</td>
+      <td>{{ m['subject'] }}</td>
+      <td class="muted" style="font-size:12px">{{ m['kind'] }}</td>
+      <td><span class="pill {{ m['status'] }}">{{ m['status'] }}</span></td>
+      <td><a href="/admin/email/{{ m['id'] }}">Read</a></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6" class="muted">Nothing yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

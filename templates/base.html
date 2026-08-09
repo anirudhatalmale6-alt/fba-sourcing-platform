@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}{{ brand }}{% endblock %}</title>
+<meta name="description" content="{% block desc %}{{ tagline }}. Landed cost calculator, factory sourcing, quality control and delivery into Amazon FBA.{% endblock %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/app.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%230d1b2a'/><path d='M7 21V11h3v4h6v-4h3v10h-3v-4h-6v4z' fill='%23c2703d'/></svg>">
+</head>
+<body class="{% block bodyclass %}{% endblock %}">
+
+<div class="ticker">
+  <span>UK IMPORT DESK</span><span>DUTY &amp; VAT HANDLED</span>
+  <span>FACTORY DIRECT &mdash; <b>NOT TRADING COMPANIES</b></span>
+  <span>PRE-SHIPMENT INSPECTION</span><span>DELIVERED INTO AMAZON FBA</span>
+  <span>FNSKU LABELLING &amp; PREP</span><span>PRIVATE LABEL &amp; PACKAGING</span>
+</div>
+
+<header class="site">
+  <div class="bar">
+    <a class="logo" href="/">
+      <span>{{ brand.split(' ')[0] }}<em>{% if brand.split(' ')|length > 1 %}&nbsp;{{ brand.split(' ')[1:]|join(' ') }}{% endif %}</em>
+        <small>China sourcing &middot; Amazon FBA</small></span>
+    </a>
+    <nav class="main">
+      <a href="/#calculator">Calculator</a>
+      <a href="/services">Sourcing</a>
+      <a href="/#pricing">Pricing</a>
+      <a href="/contact">Contact</a>
+      <a class="btn amber" href="/audit">{{ audit_name }} &mdash; &pound;{{ '%g' % audit_price }}</a>
+    </nav>
+  </div>
+</header>
+
+{% block content %}{% endblock %}
+
+<footer class="site">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand">{{ brand.split(' ')[0] }}<em>{% if brand.split(' ')|length > 1 %} {{ brand.split(' ')[1:]|join(' ') }}{% endif %}</em></div>
+        <p style="margin:0;max-width:34em">{{ tagline }}. We find the factory, negotiate the
+        price, check the goods and deliver them prepped and labelled into Amazon.</p>
+      </div>
+      <div>
+        <h5>Services</h5>
+        <ul>
+          <li><a href="/#calculator">Landed cost calculator</a></li>
+          <li><a href="/audit">{{ audit_name }}</a></li>
+          <li><a href="/services">Sourcing &amp; FBA launch</a></li>
+          <li><a href="/services#quality">Quality control</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Company</h5>
+        <ul>
+          <li><a href="/contact">Contact</a></li>
+          <li><a href="/#pricing">Pricing</a></li>
+          {% if cfg.CONTACT_EMAIL %}<li><a href="mailto:{{ cfg.CONTACT_EMAIL }}">{{ cfg.CONTACT_EMAIL }}</a></li>{% endif %}
+          {% if cfg.CONTACT_PHONE %}<li>{{ cfg.CONTACT_PHONE }}</li>{% endif %}
+        </ul>
+      </div>
+    </div>
+    <div class="legal">
+      <span>&copy; {{ year }} {{ brand }}. All rights reserved.</span>
+      <span>Figures are commercial estimates, not tax or legal advice. Confirm duty
+        rates and commodity codes before ordering.</span>
+    </div>
+  </div>
+</footer>
+{% block scripts %}{% endblock %}
+</body>
+</html>

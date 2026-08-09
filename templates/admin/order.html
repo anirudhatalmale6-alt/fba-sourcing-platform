@@ -1,0 +1,93 @@
+{% extends "admin/_base.html" %}
+{% set active = 'orders' %}
+{% block title %}{{ order['reference'] }}{% endblock %}
+{% block content %}
+<p style="margin:0 0 8px"><a href="/admin/orders" style="color:var(--muted);text-decoration:none">&larr; All orders</a></p>
+<h2 style="font-size:22px;margin:0 0 4px">{{ order['reference'] }}</h2>
+<p class="muted" style="margin:0 0 20px">
+  <span class="pill {{ order['status'] }}">{{ order['status'] }}</span>
+  <span class="pill {{ order['report_status'] }}">{{ order['report_status'].replace('_',' ') }}</span>
+  &nbsp;{{ order['service'] }} &middot; {{ order['amount_gbp']|money|safe }}
+  {% if order['provider'] %}&middot; via {{ order['provider'] }}{% endif %}
+</p>
+
+{% if saved %}<div class="notice" style="margin-bottom:20px"><p>Saved.</p></div>{% endif %}
+
+<div class="admin-card">
+  <h3>Customer</h3>
+  {% if lead %}
+  <table class="kv">
+    <tr><th>Name</th><td>{{ lead['name'] or '&mdash;'|safe }}</td></tr>
+    <tr><th>Email</th><td>{{ lead['email'] or '&mdash;'|safe }}</td></tr>
+    <tr><th>Phone</th><td>{{ lead['phone'] or '&mdash;'|safe }}</td></tr>
+    <tr><th>Product</th><td>{{ lead['product_name'] or '&mdash;'|safe }}</td></tr>
+    <tr><th>Supplier given</th><td>{{ lead['supplier_details'] or '&mdash;'|safe }}</td></tr>
+    <tr><th>Notes</th><td>{{ lead['notes'] or '&mdash;'|safe }}</td></tr>
+    <tr><th>Their figures</th><td>{{ lead['summary'] or '&mdash;'|safe }}</td></tr>
+    <tr><th>Marketing opt-in</th><td>{{ 'Yes' if lead['marketing_optin'] else 'No' }}</td></tr>
+  </table>
+  {% else %}<p class="muted">No lead attached.</p>{% endif %}
+</div>
+
+{% if calc %}
+<div class="admin-card">
+  <h3>Calculator result</h3>
+  <div class="stat-row" style="margin-bottom:0">
+    <div class="stat"><span>Landed / unit</span><strong>{{ calc.landed_unit|money|safe }}</strong></div>
+    <div class="stat"><span>Break-even</span><strong>{{ calc.break_even|money|safe }}</strong></div>
+    <div class="stat"><span>Their price</span><strong>{{ calc.price|money|safe }}</strong></div>
+    <div class="stat"><span>Profit / unit</span><strong>{{ calc.profit_unit|money|safe }}</strong></div>
+    <div class="stat"><span>Margin</span><strong>{{ '%.1f' % calc.margin_pct }}%</strong></div>
+    <div class="stat"><span>ROI</span><strong>{{ '%.0f' % calc.roi_pct }}%</strong></div>
+  </div>
+</div>
+{% endif %}
+
+<div class="admin-card">
+  <h3>Questionnaire</h3>
+  {% if questionnaire %}
+  <table class="kv">
+    {% for k, v in questionnaire.items() %}{% if v %}
+    <tr><th>{{ k.replace('_',' ')|title }}</th><td>{{ v }}</td></tr>
+    {% endif %}{% endfor %}
+  </table>
+  {% else %}
+  <p class="muted">Not completed yet. The customer's link is
+    <a href="/order/{{ order['token'] }}" target="_blank">/order/{{ order['token'] }}</a></p>
+  {% endif %}
+</div>
+
+<div class="admin-card">
+  <h3>Specialist review</h3>
+  <p class="muted" style="margin:-6px 0 14px;font-size:14px">Anything you write here is added
+  to the report as a signed-off section and lifts it to the manual tier. Rebuild after saving
+  if you have changed the customer's figures.</p>
+  <form method="post" action="/admin/order/{{ order['id'] }}/notes">
+    <textarea name="notes" style="width:100%;min-height:190px;font-family:var(--serif);font-size:15px;padding:12px;border:1px solid var(--rule-2)"
+      placeholder="Your own analysis of this product. What the model cannot see: what you know about this category, this factory, this freight lane, and what you would do next.">{{ order['report_notes'] or '' }}</textarea>
+    <div class="admin-actions">
+      <button class="btn amber" type="submit">Save and rebuild report</button>
+    </div>
+  </form>
+</div>
+
+<div class="admin-card">
+  <h3>Report</h3>
+  <p class="muted" style="margin:-6px 0 14px;font-size:14px">
+    {% if order['report_updated_at'] %}Last built {{ order['report_updated_at'][:16].replace('T',' ') }}.
+    {% else %}Not generated yet.{% endif %}
+    Customer link: <a href="/report/{{ order['token'] }}" target="_blank">/report/{{ order['token'] }}</a>
+  </p>
+  <div class="admin-actions">
+    <a class="btn ghost" href="/report/{{ order['token'] }}" target="_blank">View report</a>
+    <form method="post" action="/admin/order/{{ order['id'] }}/rebuild">
+      <button class="btn ghost" type="submit">Rebuild from current data</button></form>
+    <form method="post" action="/admin/order/{{ order['id'] }}/deliver">
+      <button class="btn" type="submit">Mark delivered &amp; email customer</button></form>
+    {% if order['status'] != 'paid' %}
+    <form method="post" action="/admin/order/{{ order['id'] }}/markpaid">
+      <button class="btn ghost" type="submit">Mark as paid (bank transfer)</button></form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
