@@ -58,7 +58,7 @@ with sync_playwright() as p:
     # report: use the newest paid order token from admin
     pg.goto(BASE + "/admin/login", wait_until="networkidle")
     pg.fill("[name='username']", "admin")
-    pg.fill("[name='password']", "harbourline2026")
+    pg.fill("[name='password']", "change-this-password")
     pg.click("button[type=submit]")
     pg.wait_for_timeout(700)
     pg.screenshot(path=f"{OUT}/08-admin-dashboard.png")

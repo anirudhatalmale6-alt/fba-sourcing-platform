@@ -7,7 +7,7 @@ import http.cookiejar
 
 BASE = sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:8899"
 ADMIN_USER = sys.argv[2] if len(sys.argv) > 2 else "admin"
-ADMIN_PASS = sys.argv[3] if len(sys.argv) > 3 else "harbourline2026"
+ADMIN_PASS = sys.argv[3] if len(sys.argv) > 3 else "change-this-password"
 
 jar = http.cookiejar.CookieJar()
 opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
