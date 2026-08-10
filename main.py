@@ -24,6 +24,15 @@ templates = Jinja2Templates(directory=str(config.BASE_DIR / "templates"))
 db.init()
 
 
+@app.middleware("http")
+async def _search_visibility(request: Request, call_next):
+    """Keep the site out of search results until it is genuinely ready to launch."""
+    response = await call_next(request)
+    if not config.SEARCH_INDEXABLE:
+        response.headers["X-Robots-Tag"] = "noindex, nofollow"
+    return response
+
+
 @app.on_event("startup")
 async def _start_sequence_runner():
     if config.SEQUENCE_ENABLED:
@@ -557,3 +566,24 @@ def export_leads(_=Depends(require_admin)):
 @app.api_route("/healthz", methods=["GET", "HEAD"])
 def healthz():
     return {"ok": True, "payments": payments.available(), "email_live": config.EMAIL_LIVE}
+
+
+@app.api_route("/robots.txt", methods=["GET", "HEAD"], response_class=PlainTextResponse)
+def robots():
+    """Before launch we deliberately still ALLOW crawling.
+
+    A "Disallow: /" would stop a crawler ever fetching the page, which means it
+    never sees the noindex header below - and a URL someone links to can then get
+    listed anyway, with no description. Letting them in to read "noindex" is the
+    thing that reliably keeps the site out of the results.
+    """
+    if not config.SEARCH_INDEXABLE:
+        return PlainTextResponse("User-agent: *\nDisallow: /admin\n")
+    return PlainTextResponse(
+        "User-agent: *\n"
+        "Allow: /\n"
+        "Disallow: /admin\n"
+        "Disallow: /report/\n"
+        "Disallow: /pay/\n"
+        "Disallow: /unsubscribe/\n"
+        "\nSitemap: %s/sitemap.xml\n" % config.PUBLIC_BASE_URL)

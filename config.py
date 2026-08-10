@@ -85,6 +85,12 @@ SMTP_TLS = _flag("SMTP_TLS", True)
 ADMIN_NOTIFY_EMAIL = _env("ADMIN_NOTIFY_EMAIL", "")
 EMAIL_LIVE = bool(SMTP_HOST and SMTP_FROM)
 
+# --- Search visibility ------------------------------------------------------
+# Off until launch. A half-configured site getting indexed is hard to undo: the
+# wrong pages sit in Google for weeks after you fix them. Set SEARCH_INDEXABLE=1
+# when the real WhatsApp number, payment keys and SMTP are all in place.
+SEARCH_INDEXABLE = _flag("SEARCH_INDEXABLE", False)
+
 # --- Admin -----------------------------------------------------------------
 ADMIN_USER = _env("ADMIN_USER", "admin")
 ADMIN_PASS = _env("ADMIN_PASS", "change-this-password")

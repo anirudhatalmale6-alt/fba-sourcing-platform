@@ -59,6 +59,7 @@ All settings are environment variables, read in `config.py`. Nothing is hard-cod
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`, `SMTP_TLS` | Outbound email. |
 | `ADMIN_NOTIFY_EMAIL` | Where new lead and sale alerts go. |
 | `ADMIN_USER`, `ADMIN_PASS`, `SESSION_SECRET` | Admin access. Change all three before going live. |
+| `SEARCH_INDEXABLE` | Off by default: every page serves `noindex, nofollow` so the site cannot get listed while it is still being set up. Set to `1` at launch. |
 | `STARTER_PRICE_GBP`, `STARTER_NAME` | The sourcing tier. |
 | `LAUNCH_PRICE_FROM`, `LAUNCH_PRICE_TO`, `LAUNCH_NAME` | The done-for-you tier. |
 | `WHATSAPP_NUMBER`, `WHATSAPP_HOURS`, `WHATSAPP_PREFILL` | Digits only, international, no plus sign. Blank hides every WhatsApp element. |
@@ -73,11 +74,15 @@ be tested before accounts exist. Adding keys removes the demo step automatically
 
 ## Going live on a domain
 
-1. Point an A record at the server.
-2. Install the vhost in `deploy/nginx.conf`, replacing `YOUR_DOMAIN`.
-3. `certbot --nginx -d YOUR_DOMAIN -d www.YOUR_DOMAIN`
-4. Set `PUBLIC_BASE_URL=https://YOUR_DOMAIN` and restart.
+Live at **https://sourcereveal.co.uk**. `www`, the `.com` and `www.com` all 301 to it, so there
+is one canonical address. To repeat the setup elsewhere:
+
+1. Point A records for the apex and `www` at the server.
+2. Install the vhost in `deploy/nginx.conf`.
+3. `certbot --nginx -d DOMAIN -d www.DOMAIN` (add the `.com` pair to the same certificate).
+4. Set `PUBLIC_BASE_URL=https://DOMAIN` and restart.
 5. Add gateway keys and SMTP, then change the admin password.
+6. At launch, set `SEARCH_INDEXABLE=1` — until then every page is `noindex, nofollow`.
 
 Stripe webhook endpoint: `POST /webhook/stripe` (event `checkout.session.completed`). The
 success URL already settles the order, so the webhook is a safety net for customers who close

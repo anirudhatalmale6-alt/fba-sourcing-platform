@@ -13,6 +13,16 @@
 </div>
 {% endif %}
 
+{% if not cfg.SEARCH_INDEXABLE %}
+<div class="notice warn" style="margin-bottom:22px">
+  <h4>The site is hidden from Google</h4>
+  <p>Every page is serving <span class="mono">noindex, nofollow</span> on purpose, so the site
+  cannot get listed while payments are in demo mode and the WhatsApp number is a placeholder.
+  Anyone with the link can still see it normally &mdash; this only affects search engines.
+  When you are ready to launch, set <span class="mono">SEARCH_INDEXABLE=1</span> and restart.</p>
+</div>
+{% endif %}
+
 {% if not cfg.EMAIL_LIVE or not cfg.PAYMENTS_LIVE %}
 <div class="notice warn" style="margin-bottom:22px">
   <h4>Running in test configuration</h4>
