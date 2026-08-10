@@ -1,7 +1,9 @@
 """End-to-end walk of the funnel against a running instance."""
+import json
 import re
 import sys
 import urllib.parse
+import urllib.error
 import urllib.request
 import http.cookiejar
 
@@ -24,6 +26,26 @@ def post(path, data):
     req = urllib.request.Request(BASE + path, data=body, method="POST")
     with opener.open(req, timeout=30) as r:
         return r.status, r.read().decode(), r.url
+
+
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *a, **kw):
+        return None
+
+
+_plain = urllib.request.build_opener(
+    urllib.request.HTTPCookieProcessor(jar), _NoRedirect)
+
+
+def post_nofollow(path, data):
+    """POST without chasing the redirect, so we can inspect where it points."""
+    body = urllib.parse.urlencode(data).encode()
+    req = urllib.request.Request(BASE + path, data=body, method="POST")
+    try:
+        with _plain.open(req, timeout=30) as r:
+            return r.status, r.headers.get("Location")
+    except urllib.error.HTTPError as e:
+        return e.code, e.headers.get("Location")
 
 
 def check(label, cond, extra=""):
@@ -71,14 +93,47 @@ st, body, _ = post("/lead", {**FIGURES, "name": "Bad", "email": "not-an-email"})
 check("bad email rejected", "does not look right" in body)
 
 print("\n4. CHECKOUT AND PAYMENT")
-st, body, url = post("/checkout", {"lead_token": lead_token, "provider": "demo"})
-check("checkout reaches payment step", "Simulate successful payment" in body, url)
-m = re.search(r"/pay/demo/([A-Za-z0-9_\-]+)", body)
-token = m.group(1) if m else ""
-check("order token issued", bool(token))
-st, body, url = post("/pay/demo/%s" % token, {})
-check("payment lands on questionnaire", "Tell us about the product" in body, url)
-check("payment confirmed on screen", "Payment received" in body)
+st, body, _ = get("/healthz")
+gateways = json.loads(body).get("payments", [])
+demo_mode = "demo" in gateways
+
+if demo_mode:
+    st, body, url = post("/checkout", {"lead_token": lead_token, "provider": "demo"})
+    check("checkout reaches payment step", "Simulate successful payment" in body, url)
+    m = re.search(r"/pay/demo/([A-Za-z0-9_\-]+)", body)
+    token = m.group(1) if m else ""
+    check("order token issued", bool(token))
+    st, body, url = post("/pay/demo/%s" % token, {})
+    check("payment lands on questionnaire", "Tell us about the product" in body, url)
+    check("payment confirmed on screen", "Payment received" in body)
+else:
+    # A real gateway is configured. The simulator has to be sealed off, otherwise
+    # posting provider=demo would hand out a paid order without any money moving.
+    check("a real gateway is configured", bool(gateways), gateways)
+    st, loc = post_nofollow("/checkout", {"lead_token": lead_token, "provider": "demo"})
+    check("demo bypass refused when a gateway is live", "/pay/demo/" not in (loc or ""),
+          "%s -> %s" % (st, loc))
+    check("checkout sends the buyer to the gateway",
+          bool(loc) and ("paypal.com" in loc or "stripe.com" in loc), loc)
+
+    post("/admin/login", {"username": ADMIN_USER, "password": ADMIN_PASS})
+    st, body, _ = get("/admin/orders")
+    m = re.search(r"/admin/order/(\d+)", body)
+    order_id = m.group(1) if m else ""
+    check("unpaid order recorded", bool(order_id), body[:150])
+
+    st, body, _ = get("/admin/order/%s" % order_id)
+    m = re.search(r"/order/([A-Za-z0-9_\-]{16,})", body)
+    token = m.group(1) if m else ""
+    check("customer order token issued", bool(token))
+
+    st, _loc = post_nofollow("/pay/demo/%s" % token, {})
+    check("simulator refuses to settle a live order", st == 404, st)
+
+    # Settle it the way a bank transfer would be, so the rest of the funnel is covered.
+    post("/admin/order/%s/markpaid" % order_id, {})
+    st, body, url = get("/order/%s" % token)
+    check("payment lands on questionnaire", "Tell us about the product" in body, url)
 
 print("\n5. QUESTIONNAIRE AND REPORT")
 st, body, url = post("/order/%s/questionnaire" % token, {
@@ -112,7 +167,7 @@ check("login page renders", st == 200 and "Admin area" in body)
 st, body, url = post("/admin/login", {"username": ADMIN_USER, "password": ADMIN_PASS})
 check("admin signs in", "Dashboard" in body, url)
 check("revenue recorded", "79.00" in body, "")
-for path, must in [("/admin/orders", "HL-"), ("/admin/leads", "jane@example.co.uk"),
+for path, must in [("/admin/orders", "SR-"), ("/admin/leads", "jane@example.co.uk"),
                    ("/admin/enquiries", "tom@example.com"), ("/admin/emails", "Outbox")]:
     st, body, _ = get(path)
     check("admin %s" % path, st == 200 and must in body, st)

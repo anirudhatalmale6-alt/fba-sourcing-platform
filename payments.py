@@ -119,4 +119,15 @@ def start(provider, order_ref, token, amount_gbp, product_name, email=None):
     if provider == "paypal" and config.PAYPAL_CLIENT_ID:
         pid, url = paypal_checkout(order_ref, token, amount_gbp, product_name)
         return "paypal", pid, url
+
+    # Once a real gateway is configured the demo step must never be reachable,
+    # or anyone posting provider=demo walks off with a paid order for nothing.
+    # Fall forward to a real gateway rather than back to the simulator.
+    if config.PAYMENTS_LIVE:
+        if config.STRIPE_SECRET_KEY:
+            sid, url = stripe_checkout(order_ref, token, amount_gbp, product_name, email)
+            return "stripe", sid, url
+        pid, url = paypal_checkout(order_ref, token, amount_gbp, product_name)
+        return "paypal", pid, url
+
     return "demo", "demo_%s" % order_ref, "%s/pay/demo/%s" % (config.PUBLIC_BASE_URL, token)

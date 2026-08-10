@@ -24,6 +24,7 @@ def _flag(key, default=False):
 BRAND_NAME = _env("BRAND_NAME", "Source Reveal")
 BRAND_TAGLINE = _env("BRAND_TAGLINE", "China sourcing and Amazon FBA delivery for UK sellers")
 BRAND_DOMAIN = _env("BRAND_DOMAIN", "sourcereveal.co.uk")
+ORDER_PREFIX = _env("ORDER_PREFIX", "SR")   # customer-facing reference, e.g. SR-260810-9F3A1C
 PUBLIC_BASE_URL = _env("PUBLIC_BASE_URL", "http://167.99.198.145:8110").rstrip("/")
 CONTACT_EMAIL = _env("CONTACT_EMAIL", "")         # shown on site only if set
 CONTACT_PHONE = _env("CONTACT_PHONE", "")

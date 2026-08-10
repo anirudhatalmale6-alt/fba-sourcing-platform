@@ -253,6 +253,8 @@ async def checkout(request: Request):
 
 @app.get("/pay/demo/{token}", response_class=HTMLResponse)
 def demo_pay(request: Request, token: str):
+    if config.PAYMENTS_LIVE:
+        raise HTTPException(404)
     order = db.get_order_by_token(token)
     if not order:
         raise HTTPException(404)
@@ -263,6 +265,10 @@ def demo_pay(request: Request, token: str):
 
 @app.post("/pay/demo/{token}")
 def demo_pay_confirm(token: str):
+    # The simulator marks an order paid without any money moving. It exists only
+    # while there is no gateway; with real keys configured it must not answer.
+    if config.PAYMENTS_LIVE:
+        raise HTTPException(404)
     order = db.get_order_by_token(token)
     if not order:
         raise HTTPException(404)
@@ -426,7 +432,8 @@ def admin_logout():
 @app.get("/admin", response_class=HTMLResponse)
 def admin_home(request: Request, _=Depends(require_admin)):
     ctx = base_ctx(request)
-    ctx.update({"stats": db.stats(), "leads": db.list_leads(8), "orders": db.list_orders(8)})
+    ctx.update({"stats": db.stats(), "leads": db.list_leads(8), "orders": db.list_orders(8),
+                "pay_error": db.last_payment_error()})
     return templates.TemplateResponse("admin/dashboard.html", ctx)
 
 

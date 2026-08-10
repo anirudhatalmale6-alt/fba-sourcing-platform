@@ -4,6 +4,7 @@ import sqlite3
 import secrets
 from datetime import datetime, timezone
 
+import config
 from config import DB_PATH
 
 SCHEMA = """
@@ -106,8 +107,9 @@ def token():
 
 
 def reference():
+    """Customer-facing order reference, e.g. SR-260810-9F3A1C."""
     stamp = datetime.now(timezone.utc).strftime("%y%m%d")
-    return "HL-%s-%s" % (stamp, secrets.token_hex(3).upper())
+    return "%s-%s-%s" % (config.ORDER_PREFIX, stamp, secrets.token_hex(3).upper())
 
 
 # --- leads -----------------------------------------------------------------
@@ -320,3 +322,12 @@ def stats():
             "seq_pending": one("SELECT COUNT(*) FROM sequence_jobs WHERE status='scheduled'"),
             "seq_sent": one("SELECT COUNT(*) FROM sequence_jobs WHERE status='sent'"),
         }
+
+
+def last_payment_error():
+    """Most recent failed attempt to start a payment, so a broken gateway is visible."""
+    with connect() as conn:
+        return conn.execute(
+            """SELECT created_at, subject, body FROM emails
+               WHERE kind='error' AND subject LIKE 'Payment start failed%'
+               ORDER BY id DESC LIMIT 1""").fetchone()
