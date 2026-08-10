@@ -121,7 +121,8 @@ def require_admin(request: Request):
 
 
 # --- public pages ----------------------------------------------------------
-@app.get("/", response_class=HTMLResponse)
+# HEAD as well as GET: most uptime monitors and link checkers send HEAD first.
+@app.api_route("/", methods=["GET", "HEAD"], response_class=HTMLResponse)
 def home(request: Request):
     ctx = base_ctx(request)
     ctx["defaults"] = {
@@ -553,6 +554,6 @@ def export_leads(_=Depends(require_admin)):
         "Content-Disposition": "attachment; filename=leads.csv"})
 
 
-@app.get("/healthz")
+@app.api_route("/healthz", methods=["GET", "HEAD"])
 def healthz():
     return {"ok": True, "payments": payments.available(), "email_live": config.EMAIL_LIVE}
